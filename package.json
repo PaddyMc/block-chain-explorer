@@ -1,0 +1,27 @@
+{
+  "name": "block-chain-explorer",
+  "version": "1.0.0",
+  "description": "bc explorer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaddyMc/block-chain-explorer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PaddyMc/block-chain-explorer/issues"
+  },
+  "homepage": "https://github.com/PaddyMc/block-chain-explorer#readme",
+  "dependencies": {
+    "@tronprotocol/wallet-api": "0.0.27",
+    "babel-core": "^6.26.0",
+    "babel-polyfill": "^6.26.0"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.1"
+  }
+}

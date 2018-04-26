@@ -16,4 +16,4 @@
 </ul>
 
 <h3>To cleanup elasticsearch data:</h3>
-  <li>curl -X DELETE 'http://localhost:9200/_all'</li>
+  <li>curl -X DELETE 'http://localhost:9200/_all</li>

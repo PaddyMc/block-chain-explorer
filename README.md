@@ -15,3 +15,5 @@
   <li>node ./index.js</li>
 </ul>
 
+<h3>To cleanup elasticsearch data:</h3>
+curl -X DELETE 'http://localhost:9200/_all'

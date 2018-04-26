@@ -3,12 +3,12 @@ import {HttpClient, GrpcClient} from "@tronprotocol/wallet-api";
 const Client = new HttpClient();
 
 var hostnameAndPort = {hostname:"127.0.0.1", port:"50051"};
-const GRPCClient = new GrpcClient(hostnameAndPort);
+// const GRPCClient = new GrpcClient(hostnameAndPort);
 
 class BlockChainData {
-	constructor(construction) {
+  constructor(construction) {
 		console.log(construction);
-  	}
+  }
 
 	async getAllBlocks() {
 		let latestBlock = await Client.getLatestBlock();
@@ -31,6 +31,27 @@ class BlockChainData {
 		let allNodes = await Client.getNodes();
 		return allNodes
 	}
-}
 
+	async getAllBlocksAsBulkRequest(){
+		let latestBlock = await Client.getLatestBlock();
+
+		let blockData;
+	  let bulkRequest = [];
+
+	  for(var i = 0; i < latestBlock.number; i++){
+	    let currentBlock = await Client.getBlockByNum(i);
+	    blockData = {
+	      parentHash: currentBlock.parentHash,
+	      number: currentBlock.number,
+	      witnessAddress: currentBlock.witnessAddress,
+	      transactions: currentBlock.transactions,
+	      transactionsCount: currentBlock.transactionsCount
+	    };
+	    bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: currentBlock.number}});
+	    bulkRequest.push(blockData);
+		}
+
+		return bulkRequest;
+  }
+}
 module.exports = BlockChainData;

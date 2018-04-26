@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/PaddyMc/block-chain-explorer#readme",
   "dependencies": {
+    "angular": "^1.6.10",
+    "elasticsearch": "^14.2.2",
     "@tronprotocol/wallet-api": "0.0.27",
     "babel-core": "^6.26.0",
     "babel-polyfill": "^6.26.0",

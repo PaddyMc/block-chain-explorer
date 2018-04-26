@@ -19,7 +19,11 @@
   "dependencies": {
     "@tronprotocol/wallet-api": "0.0.27",
     "babel-core": "^6.26.0",
-    "babel-polyfill": "^6.26.0"
+    "babel-polyfill": "^6.26.0",
+    "google-protobuf": "^3.5.0",
+    "grpc": "^1.10.1",
+    "grpc-caller": "^0.4.0",
+    "grpc-tools": "^1.6.6"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1"

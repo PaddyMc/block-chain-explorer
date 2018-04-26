@@ -6,7 +6,7 @@
   <li>https://www.elastic.co/products/kibana</li>
 </ul>
 
-<h2>To Run:</h2>
+<h3>To Run:</h3>
 <p>Start elastic search ( run .\elasticsearch.bat in \elasticsearch-x.x.x\bin directory)</p>
 <div></div>
 <h4>Navigate to block-chain-explorer directory</h4> 

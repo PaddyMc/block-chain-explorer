@@ -36,22 +36,24 @@ class BlockChainData {
 		let latestBlock = await Client.getLatestBlock();
 
 		let blockData;
-	  let bulkRequest = [];
+		let bulkRequest = [];
 
-	  for(var i = 0; i < latestBlock.number; i++){
-	    let currentBlock = await Client.getBlockByNum(i);
-	    blockData = {
-	      parentHash: currentBlock.parentHash,
-	      number: currentBlock.number,
-	      witnessAddress: currentBlock.witnessAddress,
-	      transactions: currentBlock.transactions,
-	      transactionsCount: currentBlock.transactionsCount
-	    };
-	    bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: currentBlock.number}});
-	    bulkRequest.push(blockData);
+		for(var i = 10; i < 20; i++){
+			let currentBlock = await Client.getBlockByNum(i);
+			blockData = {
+		    	parentHash: currentBlock.parentHash,
+		    	number: currentBlock.number,
+		    	time: currentBlock.time,
+		    	witnessAddress: currentBlock.witnessAddress,
+		    	transactions: currentBlock.transactions,
+		    	transactionsCount: currentBlock.transactionsCount
+		    };
+		    bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: currentBlock.number}});
+		    bulkRequest.push(blockData);
 		}
 
 		return bulkRequest;
   }
 }
+
 module.exports = BlockChainData;

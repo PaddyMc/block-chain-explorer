@@ -8,36 +8,41 @@ var client = new elasticsearch.Client({
 });
 
 var blockChainData = new BlockChainData("ThisIsOurDataObject");
-// blockChainData.getAllBlocks()
+blockChainData.getAllBlocks()
 
 console.log("Hope");
 
-var promiseWithTronData = blockChainData.getAllBlocksAsBulkRequest();
+function insertDataFromTronBCIntoElasticSearch(){
+  var promiseWithTronData = blockChainData.getAllBlocksAsBulkRequest();
 
-promiseWithTronData.then(function(bulkRequest) {
-  var insertData = function(){
-    var busy = false;
-    var callback = function(error, response) {
-      if (error) {
-        console.log(error);
-      }
-      busy = false;
-    };
+    promiseWithTronData.then(function(bulkRequest) {
+        var insertData = function(){
+            var busy = false;
+            var callback = function(error, response) {
+                if (error) {
+                    console.log(error);
+                }
+                busy = false;
+            };
 
-    if (!busy) {
-      busy = true;
-      client.bulk({
-        body: bulkRequest.slice(0, 1000)
-      }, callback);
-      bulkRequest = bulkRequest.slice(1000);
-    }
+            if (!busy) {
+                busy = true;
+                client.bulk({
+                    body: bulkRequest.slice(0, 1000)
+                }, callback);
+                bulkRequest = bulkRequest.slice(1000);
+            }
 
-    if (bulkRequest.length > 0) {
-      setTimeout(insertData, 10);
-    } else {
-      console.log('Inserted all blocks into elasticsearch.');
-    }
-  };
+            if (bulkRequest.length > 0) {
+                setTimeout(insertData, 10);
+                } else {
+                console.log('Inserted all blocks into elasticsearch.');
+            }
+        };
 
-  insertData();
-});
+        insertData();
+    });
+}
+
+//insertDataFromTronBCIntoElasticSearch();
+

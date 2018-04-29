@@ -6,13 +6,13 @@ var hostnameAndPort = {hostname:"127.0.0.1", port:"50051"};
 // const GRPCClient = new GrpcClient(hostnameAndPort);
 
 class BlockChainData {
-  constructor(construction) {
+	constructor(construction) {
 		console.log(construction);
-  }
+	}
 
-	async getAllBlocks() {
+	async getLatestBlock() {
 		let latestBlock = await Client.getLatestBlock();
-		//console.log(latestBlock.number)
+		console.log(latestBlock.number);
 
 		//let nativeBlock = await grpcClient.getBlockByNumber(0);
 		//console.log(nativeBlock);
@@ -20,11 +20,11 @@ class BlockChainData {
 		/*let latestBlock1 = await Client.getBlockByNum(0);
 		console.log(latestBlock1)*/
 		//let nodes = await Client.getNodes();
-		for (var i = 0; i <= latestBlock.number; i++) {
+		/*for (var i = 0; i <= latestBlock.number; i++) {
 			let latestBlock = await Client.getBlockByNum(i);
 			//let nativeBlock = await GRPCClient.getBlockByNum();
 			console.log(latestBlock);
-		}
+		}*/
 	}
 
 	async getNodes(){
@@ -38,7 +38,8 @@ class BlockChainData {
 		let blockData;
 		let bulkRequest = [];
 
-		for(var i = 10; i < 20; i++){
+		//change here for testing!
+		for(var i = 20; i < 30; i++){
 			let currentBlock = await Client.getBlockByNum(i);
 			blockData = {
 		    	parentHash: currentBlock.parentHash,

@@ -1,16 +1,18 @@
 require('babel-core/register');
 require('babel-polyfill');
-const BlockChainData = require('./explorer.js');
 
+//Cassandra DBUtils
+require('./dbUtils.js');
+
+const BlockChainData = require('./explorer.js');
 var elasticsearch = require('elasticsearch');
+
 var client = new elasticsearch.Client({
   host: 'localhost:9200'
 });
 
 var blockChainData = new BlockChainData("ThisIsOurDataObject");
-blockChainData.getAllBlocks()
-
-console.log("Hope");
+blockChainData.getLatestBlock();
 
 function insertDataFromTronBCIntoElasticSearch(){
   var promiseWithTronData = blockChainData.getAllBlocksAsBulkRequest();
@@ -44,5 +46,5 @@ function insertDataFromTronBCIntoElasticSearch(){
     });
 }
 
-//insertDataFromTronBCIntoElasticSearch();
+insertDataFromTronBCIntoElasticSearch();
 

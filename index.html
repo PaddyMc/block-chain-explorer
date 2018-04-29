@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <title>Elasticsearch</title>
+   </head>
+
+   <body>
+      <h1>Elasticsearch</h1>
+
+      <div id="input">
+          <label for"search">Search: </label>
+          <input type="text" id="search"/>
+          <input type="submit" onclick="doSearch(document.getElementById('search').value);"/>
+      </div>
+
+      <div id="searchCount"></div>
+      <div id="searchResult"></div>
+
+      <script type="application/javascript">
+         function doSearch (filter) {
+            var elasticsearchHost = 'http://localhost:9200/_search';
+
+            var body = {
+               'size': 5000
+            };
+            var query = {
+               'bool': {}
+            };
+
+            if (filter.length !== 0) {
+               query.bool.must = {
+                  'multi_match': {
+                     'query': filter,
+                     'fields': [ '_id' ]
+                  }
+               };
+            }
+            body.query = query;
+
+            var xmlHttpRequest = new XMLHttpRequest();
+            xmlHttpRequest.open('POST', elasticsearchHost, false);
+            xmlHttpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            xmlHttpRequest.send(JSON.stringify(body));
+            var response = JSON.parse(xmlHttpRequest.responseText);
+
+            var output = '';
+            for (var i = 0; i < response.hits.hits.length; i++) {
+               output += '<h3>' + "BLOCK: " + response.hits.hits[i]._id + '</h3>';
+               output += "parentHash: " + response.hits.hits[i]._source.parentHash + '</br>';
+               output += "witnessAddress: " + response.hits.hits[i]._source.witnessAddress + '</br>';
+               output += "transactionsCount: " + response.hits.hits[i]._source.transactionsCount + '</br>';
+
+               if(response.hits.hits[i]._source.transactions){
+                  output += "transactions: " + '</br>';
+                  for(var k in response.hits.hits[i]._source.transactions){
+                     output += "___transaction " + k + "___" + '</br>';
+                     output += " - fromAddress: " + response.hits.hits[i]._source.transactions[k].fromaddress + '</br>';
+                     output += " - toAddress: " + response.hits.hits[i]._source.transactions[k].toaddress + '</br>';
+                     output += " - amount: " + response.hits.hits[i]._source.transactions[k].amount + '</br>';
+                  }
+               }
+            }
+            document.getElementById('searchCount').innerHTML = '<h2>Showing ' + response.hits.hits.length + ' results</h2>';
+            document.getElementById('searchResult').innerHTML = output;
+         }
+         doSearch('');
+      </script>
+   </body>
+</html>

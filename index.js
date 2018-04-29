@@ -45,7 +45,8 @@ function putAllBlockDataIntoDB(){
     });
 }
 
-//putAllBlockDataIntoDB();
+// putAllBlockDataIntoDB();
+putDataIntoElasticSearch();
 var allBlocksPromise = cassandraDBUtils.getAllBlocks();
 allBlocksPromise.then(function(jsonData){
     console.log(jsonData);
@@ -61,6 +62,6 @@ function _buildParamsForBlockInsertStatment(dataFromLocalNode){
         transactions[i] = newArray;
     }
 
-    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, 0, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions];
+    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions];
     return params;
 }

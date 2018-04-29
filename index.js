@@ -1,26 +1,41 @@
 require('babel-core/register');
 require('babel-polyfill');
 
+<<<<<<< HEAD
 //Cassandra DBUtils
 const CassandraDBUtils = require('./cassandra/dbUtils.js');
+=======
+//DBUtils
+const CassandraDBUtils = require('./dbUtils.js');
+const ElasticSearchDBUtils = require('./elasticsearch/dbUtils.js');
+>>>>>>> origin/master
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
 const BlockChainData = require('./explorer.js');
-var elasticsearch = require('elasticsearch');
-
-var client = new elasticsearch.Client({
-  host: 'localhost:9200'
-});
 
 var blockChainData = new BlockChainData("GetDataFromBC");
 var cassandraDBUtils = new CassandraDBUtils("PersistDataInDB");
+var elasticSearchDBUtils = new ElasticSearchDBUtils("ElasticSearch DBUtils created");
 
+<<<<<<< HEAD
 function putBlockIntoDatabaseFromLocalNodeByLatest(){
     var dataPromise = blockChainData.getLatestBlockFromLocalNode();
     dataPromise.then(function(dataFromLocalNode){
         const params = _buildParamsForBlockInsertStatment(dataFromLocalNode);
         cassandraDBUtils.insertBlock(params);
+=======
+function putDataIntoDatabase(){
+    //grpc
+    // var dataPromise = blockChainData.getLatestBlockFromLocalNode();
+    // dataPromise.then(function(dataFromLocalNode){
+    //     console.log(dataFromLocalNode);
+    // });
+
+    var blocksAsBulkRequestPromise = cassandraDBUtils.getAllBlocks();
+    blocksAsBulkRequestPromise.then(function(jsonData){
+        elasticSearchDBUtils.insertBulk(jsonData);
+>>>>>>> origin/master
     });
 }
 
@@ -32,6 +47,7 @@ function putBlockIntoDatabaseFromLocalNodeByNumber(number){
     });
 }
 
+<<<<<<< HEAD
 function putAllBlockDataIntoDB(){
     var dataPromise = blockChainData.getLatestBlockFromLocalNode();
     dataPromise.then(function(dataFromLocalNode){
@@ -40,43 +56,20 @@ function putAllBlockDataIntoDB(){
             putBlockIntoDatabaseFromLocalNodeByNumber(i);
         }
     });
+=======
+    const params = ['0000000000000004FC3D510BC1661E4E5905A4C197B07FEC05DC8D4784F0A898', 11, 0, '27YkUVSuvCK3K84DbnFnxYUxozpi793PTqZ', 0, { "qwresd": transaction1, "sdagf":transaction2 }]
+    // cassandraDBUtils.insertBlock(params);
+    // cassandraDBUtils.getAllBlocks();
+    //blockChainData.getBlockFromLocalNode(0);
+>>>>>>> origin/master
 
 }
 //putAllBlockDataIntoDB();
 cassandraDBUtils.getAllBlocks();
 
-function insertDataFromTronBCIntoElasticSearch(){
-  var promiseWithTronData = blockChainData.getAllBlocksAsBulkRequest();
 
-    promiseWithTronData.then(function(bulkRequest) {
-        var insertData = function(){
-            var busy = false;
-            var callback = function(error, response) {
-                if (error) {
-                    console.log(error);
-                }
-                busy = false;
-            };
 
-            if (!busy) {
-                busy = true;
-                client.bulk({
-                    body: bulkRequest.slice(0, 1000)
-                }, callback);
-                bulkRequest = bulkRequest.slice(1000);
-            }
-
-            if (bulkRequest.length > 0) {
-                setTimeout(insertData, 10);
-                } else {
-                console.log('Inserted all blocks into elasticsearch.');
-            }
-        };
-
-        insertData();
-    });
-}
-
+<<<<<<< HEAD
 function _buildParamsForBlockInsertStatment(dataFromLocalNode){
     let transactions = {};
 
@@ -91,3 +84,6 @@ function _buildParamsForBlockInsertStatment(dataFromLocalNode){
     return params;
 }
 
+=======
+//insertDataFromTronBCIntoElasticSearch();
+>>>>>>> origin/master

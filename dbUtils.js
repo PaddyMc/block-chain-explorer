@@ -2,7 +2,7 @@ const cassandra = require('cassandra-driver');
 
 const cassandraClient = new cassandra.Client({ contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' });
 
-const queryGetAllBlocksFromDB = 'SELECT parentHash, number, time, witnessAddress, transactionsCount, transactions FROM block';
+const queryGetAllBlocksFromDB = 'SELECT JSON parentHash, number, time, witnessAddress, transactionsCount, transactions FROM block';
 const queryGetTransactionsFromBlock = 'SELECT number, transactionsCount,transactions FROM block WHERE number = ?';
 const queryInsertBlock = 'INSERT INTO block (parentHash, number, time, witnessAddress, transactionsCount, transactions) VALUES (?, ?, ?, ?, ?, ?);';
 
@@ -11,9 +11,9 @@ class CassandraDBUtils {
 		console.log(construction);
 	}
 
-	getAllBlocks(){
-		cassandraClient.execute(queryGetAllBlocksFromDB)
-			.then(result => console.log(result));
+	async getAllBlocks(){
+		const result = await cassandraClient.execute(queryGetAllBlocksFromDB);
+		return result;
 	}
 
 	getTransactionsFromBlockNumber(blockNum){
@@ -21,7 +21,7 @@ class CassandraDBUtils {
 		.then(result => {
 			const row = result.first();
 			console.log(row);
-		});	
+		});
 	}
 
 	insertBlock(params){

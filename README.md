@@ -22,8 +22,7 @@
 <h4>Start cassandra</h4>
 <ul>
   <li>service cassandra start</li>
-  <li>bin/cqlsh localhost</li>
-  <li>Copy contents of cass.sql in sql cmd interface</li>
+  <li>run cass.sh in cassandra directory</li>
 </ul>
 
 <h4>Navigate to block-chain-explorer directory</h4> 
@@ -32,7 +31,7 @@
   <li>node ./index.js</li>
 </ul>
 
-<h3>To cleanup elasticsearch data:</h3>
+<h4>To cleanup elasticsearch data:</h4>
 <ul>
   <li>curl -X DELETE 'http://localhost:9200/_all</li>
 </ul>

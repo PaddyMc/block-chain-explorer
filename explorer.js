@@ -18,13 +18,11 @@ class BlockChainData {
 
 	async getLatestBlock() {
 		let latestBlock = await Client.getLatestBlock();
-		console.log("***tronscan.io***")
 		console.log(latestBlock);
 	}
 
 	async getBlockByNum(number) {
 		let blockByNum = await Client.getBlockByNum(number);
-		console.log("***tronscan.io***")
 		console.log(blockByNum);
 	}
 
@@ -96,6 +94,7 @@ class BlockChainData {
 		      contractType: Transaction.Contract.ContractType,
 		      transactions,
     	};
+
     	return tronJsonBlock;
   	}
 }

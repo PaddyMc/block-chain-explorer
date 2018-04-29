@@ -20,11 +20,9 @@ function putDataIntoDatabase(){
     //     console.log(dataFromLocalNode);
     // });
 
-    cassandraDBUtils.getAllBlocks();
-    var blocksAsBulkRequestPromise = blockChainData.getAllBlocksAsBulkRequest();
-    blocksAsBulkRequestPromise.then(function(bulkRequest){
-        console.log(bulkRequest);
-        elasticSearchDBUtils.insertBulk(bulkRequest);
+    var blocksAsBulkRequestPromise = cassandraDBUtils.getAllBlocks();
+    blocksAsBulkRequestPromise.then(function(jsonData){
+        elasticSearchDBUtils.insertBulk(jsonData);
     });
 
     var transaction1 = { blocknum: 1, fromAddress: 'val2', toAddress: 'val3', amount: 100 };

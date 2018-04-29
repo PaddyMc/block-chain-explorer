@@ -6,7 +6,9 @@ class ElasticSearchDBUtils {
 		console.log(construction);
 	}
 
-	insertBulk(bulkRequest){
+	insertBulk(jsonData){
+		var bulkRequest = _prepareBulkRequest(jsonData);
+
 		var insertData = function(){
 			var busy = false;
 			var callback = function(error, response) {
@@ -32,6 +34,26 @@ class ElasticSearchDBUtils {
 		};
       insertData();
 	}
+}
+
+function _prepareBulkRequest(jsonData){
+	let blockData;
+	let bulkRequest = [];
+
+	for(var k in jsonData["rows"]) {
+		var row = JSON.parse(jsonData["rows"][k]['[json]']);
+		blockData = {
+			parentHash: row.parenthash,
+			number: row.number,
+			time: row.time,
+			witnessAddress: row.witnessaddress,
+			transactions: row.transactions,
+			transactionsCount: row.transactionscount
+		};
+		bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: row.number}});
+		bulkRequest.push(blockData);
+	}
+	return bulkRequest;
 }
 
 module.exports = ElasticSearchDBUtils;

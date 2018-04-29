@@ -1,10 +1,11 @@
+DROP KEYSPACE blockchainexplorer;
 CREATE KEYSPACE IF NOT EXISTS blockchainexplorer WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 3 };
 USE blockchainexplorer;
 
 CREATE TYPE IF NOT EXISTS transaction (
   fromaddress text,
   toaddress text,
-  amount int,
+  amount bigint,
 );
 
 CREATE TABLE IF NOT EXISTS block (

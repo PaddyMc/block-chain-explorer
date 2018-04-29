@@ -8,7 +8,16 @@
 </ul>
 
 <h3>To Run:</h3>
-<p>Start elastic search ( run .\elasticsearch in \elasticsearch-x.x.x\bin directory )</p>
+<h4>Start tron-java node</h4>
+<ul>
+  <li>./gradlew build</li>
+  <li>./gradlew run -Pwitness</li>
+</ul>
+
+<h4>Start elastic search</h4>
+<ul>
+ <li>run .\elasticsearch in \elasticsearch-x.x.x\bin directory</li>
+</ul>
 
 <h4>Start cassandra</h4>
 <ul>
@@ -23,7 +32,7 @@
   <li>node ./index.js</li>
 </ul>
 
-<h2>To cleanup elasticsearch data:</h2>
+<h3>To cleanup elasticsearch data:</h3>
 <ul>
   <li>curl -X DELETE 'http://localhost:9200/_all</li>
 </ul>

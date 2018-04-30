@@ -22,6 +22,7 @@
 <h4>Start cassandra</h4>
 <ul>
   <li>service cassandra start</li>
+  <li>brew services cassandra start</li>
   <li>run cass.sh in cassandra directory</li>
 </ul>
 

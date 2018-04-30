@@ -34,6 +34,11 @@ class CassandraDBUtils {
 	  		.then(result => console.log('Row updated on the cluster'));
 	}
 
+	async getAllWitnesses(){
+		const result = await cassandraClient.execute(queryGetAllWitnesses);
+		return result;
+	}
+
 	insertWitness(params){
 		//const params = [address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs]
 

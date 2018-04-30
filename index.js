@@ -12,46 +12,47 @@ var blockChainData = new BlockChainData("GetDataFromBC");
 var cassandraDBUtils = new CassandraDBUtils("PersistDataInDB");
 var elasticSearchDBUtils = new ElasticSearchDBUtils("ElasticSearch DBUtils created");
 
-function putDataIntoElasticSearch(){
-    var allBlocksPromise = cassandraDBUtils.getAllBlocks();
-    allBlocksPromise.then(function(jsonData){
-        elasticSearchDBUtils.insertBulk(jsonData);
+function putAllBlockDataIntoElasticSearch(){
+    var dataPromise = cassandraDBUtils.getAllBlocks();
+    dataPromise.then(function(jsonData){
+        elasticSearchDBUtils.insertBlocks(jsonData);
+    });
+}
+
+function putAllWitnessDataIntoElasticSearch(){
+    var dataPromise = cassandraDBUtils.getAllWitnesses();
+    dataPromise.then(function(jsonData){
+        elasticSearchDBUtils.insertWitnesses(jsonData);
     });
 }
 
 function putAllWitnessesIntoDB(){
     var allWitnessPromise = blockChainData.listWitnesses()
-    allWitnessPromise.then(function(jsonData){
-        console.log(jsonData);
-
-        // ToDo : Parse json data in to witness tables
-        // ToDo : //cassandraDBUtils.insertWitness(params);
-
-
-        //console.log(JSON.parse(jsonData));
-        //for(let i = 0; i<jsonData; i++){
-            //console.log(i)
-            //console.log(jsonData[i]);
-            
-        //}
-    });  
+    allWitnessPromise.then(function(dataFromNode){
+        var jsonData = JSON.parse(JSON.stringify(dataFromNode));
+        for (var i = 0; i < jsonData.witnessesList.length; i++) {
+            let params = _buildParamsForWitnessInsertStatment(jsonData.witnessesList[i]);
+            cassandraDBUtils.insertWitness(params)
+        }
+    });
 }
 
 function putAllAccountsIntoDB(){
     var allAccountsPromise = blockChainData.listAccounts()
     allAccountsPromise.then(function(jsonData){
         console.log(jsonData);
-        
+
         // ToDo : Build table for accounts
 
-    });  
+    });
 }
 
-//putAllWitnessesIntoDB();
+// putAllWitnessesIntoDB();
+// putAllWitnessDataIntoElasticSearch();
 //putAllAccountsIntoDB();
 
-//putAllBlockDataIntoDB();
-//putDataIntoElasticSearch();
+// putAllBlockDataIntoDB();
+putAllBlockDataIntoElasticSearch();
 
 function putBlockIntoDatabaseFromLocalNodeByLatest(){
     var dataPromise = blockChainData.getLatestBlockFromLocalNode();
@@ -65,6 +66,7 @@ function putBlockIntoDatabaseFromLocalNodeByNumber(number){
     var dataPromiseByNumber = blockChainData.getBlockFromLocalNode(number);
     dataPromiseByNumber.then(function(dataFromLocalNode){
         const params = _buildParamsForBlockInsertStatment(dataFromLocalNode);
+        console.log(params);
         cassandraDBUtils.insertBlock(params);
     });
 }
@@ -89,6 +91,11 @@ function _buildParamsForBlockInsertStatment(dataFromLocalNode){
     }
 
     let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions];
+    return params;
+}
+
+function _buildParamsForWitnessInsertStatment(dataFromNode){
+    let params = [dataFromNode.address, dataFromNode.votecount, dataFromNode.pubkey, dataFromNode.url, dataFromNode.totalmissed, dataFromNode.latestblocknum, dataFromNode.latestslotnum, dataFromNode.isjobs];
     return params;
 }
 

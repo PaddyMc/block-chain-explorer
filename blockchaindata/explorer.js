@@ -3,7 +3,10 @@ const {base64DecodeFromString, byteArray2hexStr, bytesToString} = require("@tron
 const deserializeTransaction = require("@tronprotocol/wallet-api/src/protocol/serializer").deserializeTransaction;
 const {Block, Transaction, Account} = require("@tronprotocol/wallet-api/src/protocol/core/Tron_pb");
 const { getBase58CheckAddress, signTransaction, passwordToAddress } = require("@tronprotocol/wallet-api/src/utils/crypto");
-const {EmptyMessage, NumberMessage} = require("@tronprotocol/wallet-api/src/protocol/api/api_pb");
+const {Address ,EmptyMessage, NumberMessage} = require("@tronprotocol/wallet-api/src/protocol/api/api_pb");
+
+//const { Account } = require("@tronprotocol/wallet-api/src/protocol/core/Tron_pb");
+
 const Client = new HttpClient();
 
 var hostnameAndPort = {hostname:"127.0.0.1", port:"50051"};
@@ -71,11 +74,28 @@ class BlockChainData {
 		return await GRPCClient.api.getNowBlock(new EmptyMessage());
 	}
 
-	/*async getTransactionByIdFromLocalNode(id) {
-		let message = new NumberMessage();
-    	message.setNum(id);
-		return await this.api.getTransactionById(message)
-	}*/
+	async getAccount() {
+		let newAccount = new Account();
+    	newAccount.setAccountName("hope");
+		let account = await GRPCClient.api.getAccount(newAccount);
+		return account.toObject();
+	}
+
+	async listAccounts() {
+		let accounts = await GRPCClient.api.listAccounts(new EmptyMessage())
+		return accounts.toObject();
+	}
+
+	async listWitnesses(){
+		let witnesses = await GRPCClient.api.listWitnesses(new EmptyMessage())
+		return witnesses.toObject();
+	}
+
+	async createAccount(accountData){
+		let newAccount = new Account();
+    	newAccount.setAccountName("hope");
+		let account = await GRPCClient.api.createAccount(newAccount);
+	}
 
   	_returnParsedBlockData(nativeBlock){
   		let transactions = [];

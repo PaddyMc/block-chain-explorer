@@ -7,6 +7,7 @@ const queryGetAllBlocksFromDB = 'SELECT JSON parentHash, number, time, witnessAd
 const queryInsertBlock = 'INSERT INTO block (parentHash, number, time, witnessAddress, transactionsCount, transactions) VALUES (?, ?, ?, ?, ?, ?);';
 
 const queryInsertWitness = 'INSERT INTO witness (address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
+const queryGetAllWitnesses = 'SELECT JSON address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
 
 class CassandraDBUtils {
 	constructor(construction) {
@@ -42,4 +43,3 @@ class CassandraDBUtils {
 }
 
 module.exports = CassandraDBUtils;
-

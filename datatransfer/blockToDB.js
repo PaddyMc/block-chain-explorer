@@ -99,7 +99,7 @@ class BlockToDB {
 	}
 
 	_buildParamsForNodeInsertStatment(dataFromNode){
-		let decodedHost = new Buffer(dataFromNode.host, 'base64').toString('ascii');
+		let decodedHost = new Buffer(dataFromNode.host, 'base64').toString();
 	    let params = [decodedHost, dataFromNode.port.toString()];
 	    return params;
 	}

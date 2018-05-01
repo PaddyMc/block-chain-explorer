@@ -34,6 +34,22 @@ class BlockToDB {
 	    });
 	}
 
+	//ISSUEDASSETS
+	putAllIssuedAssetsIntoDB(){
+		var that = this;
+
+		var allIssuedAssetsPromise = this.blockChainData.getAssetIssueList();
+		allIssuedAssetsPromise.then(function(dataFromNode){
+	        var jsonData = JSON.parse(JSON.stringify(dataFromNode));
+	        
+			for (var i = 0; i < jsonData.assetissueList.length; i++) {
+				let params = that._buildParamsForIssuedAssetsInsertStatment(jsonData.assetissueList[i]);
+				that.cassandraDBUtils.insertAssetIssue(params);
+			}
+	    });
+	}
+
+	//ACCOUNTS
 	putAllAccountsIntoDB(){
 		let that = this;
 
@@ -102,6 +118,15 @@ class BlockToDB {
 		let decodedHost = new Buffer(dataFromNode.host, 'base64').toString();
 	    let params = [decodedHost, dataFromNode.port.toString()];
 	    return params;
+	}
+
+	_buildParamsForIssuedAssetsInsertStatment(dataFromNode){
+		dataFromNode.name = new Buffer(dataFromNode.name, 'base64').toString();
+		dataFromNode.description = new Buffer(dataFromNode.description, 'base64').toString();
+		dataFromNode.url = new Buffer(dataFromNode.url, 'base64').toString();
+		//console.log(dataFromNode.ownerAddress);
+		let params = [dataFromNode.ownerAddress, dataFromNode.name, dataFromNode.totalSupply, dataFromNode.trxNum, dataFromNode.num, dataFromNode.startTime, dataFromNode.endTime, dataFromNode.decayRatio, dataFromNode.voteScore, dataFromNode.description, dataFromNode.url]
+		return params;
 	}
 }
 

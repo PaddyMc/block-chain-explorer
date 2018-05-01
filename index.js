@@ -25,18 +25,20 @@ var restEndpoints = new RestEndpoints(blockChainData);
 //blocktoDB.putAllWitnessesIntoDB();
 //blocktoDB.putAllNodesIntoDB();
 //blocktoDB.putAllAccountsIntoDB();
+//blocktoDB.putAllIssuedAssetsIntoDB();
 
 // Insert into elastic search
 //dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 //dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
 //dbToElasticSearch.putAllAddressDataIntoElasticSearch();
 //dbToElasticSearch.putAllNodeDataIntoElasticSearch();
+//dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
 
-let dataPromise = blockChainData.getTotalTransaction();
-dataPromise.then(function(dataFromNode){
-    let jsonData = JSON.parse(JSON.stringify(dataFromNode));
-    console.log(jsonData.num);
-});
+// let dataPromise = blockChainData.getTotalTransaction();
+// dataPromise.then(function(dataFromNode){
+//     let jsonData = JSON.parse(JSON.stringify(dataFromNode));
+//     console.log(jsonData.num);
+// });
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 

@@ -13,7 +13,7 @@ class BlockChainData {
 		this.GRPCClient = new GrpcClient(hostnameAndPort);
 	}
 
-  	//     HTTP FUNCTIONS  
+  	//     HTTP FUNCTIONS
 
 	async getLatestBlock() {
 		let latestBlock = await Client.getLatestBlock();
@@ -54,8 +54,8 @@ class BlockChainData {
 		return bulkRequest;
   	}
 
-  	//     GRPC FUNCTIONS  
-  	
+  	//     GRPC FUNCTIONS
+
 	async getBlockFromLocalNode(number){
 		let nativeBlock = await this.GRPCClient.getBlockByNumber(number);
 		return this._returnParsedBlockData(nativeBlock);
@@ -85,6 +85,11 @@ class BlockChainData {
 	async listWitnesses(){
 		let witnesses = await this.GRPCClient.api.listWitnesses(new EmptyMessage())
 		return witnesses.toObject();
+	}
+
+	async listNodes(){
+		let nodes = await this.GRPCClient.api.listNodes(new EmptyMessage())
+		return nodes.toObject();
 	}
 
 	async createAccount(accountData){

@@ -26,8 +26,9 @@ var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBU
 
 // WITNESSES
 //blocktoDB.putAllWitnessesIntoDB();
-dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
-
+// dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
+// blocktoDB.putAllNodesIntoDB();
+dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 
 // ADDRESSES
 //blocktoDB.putAllAccountsIntoDB();

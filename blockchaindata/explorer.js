@@ -15,13 +15,13 @@ class BlockChainData {
 	constructor(hostnameAndPort) {
 		this.hostname = hostnameAndPort.hostname;
     	this.port = hostnameAndPort.port;
-		
+
 		//this.GRPCClient = new GrpcClient(hostnameAndPort);
 		this.TronDatabaseClient = caller(`${this.hostname}:${this.port}`, DatabaseClient);
 		this.GRPCClient = caller(`${this.hostname}:${this.port}`, WalletClient);
 	}
 
-  	//     GRPC FUNCTIONS 
+  	//     GRPC FUNCTIONS
 
 	async getBlockFromLocalNode(number){
 		let message = new NumberMessage();
@@ -62,7 +62,12 @@ class BlockChainData {
   	}
 
 	async listNodes(){
-		let nodes = await this.GRPCClient.api.listNodes(new EmptyMessage())
+		let nodes = await this.GRPCClient.listNodes(new EmptyMessage())
+		return nodes.toObject();
+	}
+
+	async getTotalTransaction(){
+		let nodes = await this.GRPCClient.totalTransaction(new EmptyMessage())
 		return nodes.toObject();
 	}
 
@@ -91,7 +96,7 @@ class BlockChainData {
 		return block.toObject();
 	}
 
-	//     END DATABASE 
+	//     END DATABASE
 
   	_returnParsedBlockData(nativeBlock){
   		let transactions = [];

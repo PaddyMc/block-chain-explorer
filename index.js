@@ -30,7 +30,7 @@ var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBU
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
-let dataPromise = blockChainData.getDynamicProperties();
+let dataPromise = blockChainData.getAssetIssueList();
 
 dataPromise.then(function(dataFromLocalNode){
     console.log(dataFromLocalNode);

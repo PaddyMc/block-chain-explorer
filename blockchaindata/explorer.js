@@ -57,6 +57,11 @@ class BlockChainData {
 		return witnesses.toObject();
 	}
 
+	async getAssetIssueList(){
+		let assetIssueList = await this.GRPCClient.getAssetIssueList(new EmptyMessage());
+		return assetIssueList.toObject();
+	}
+
 	async createAccount(accountData){
 		let newAccount = new Account();
     	newAccount.setAccountName("hope");

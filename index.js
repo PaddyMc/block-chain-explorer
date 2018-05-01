@@ -5,6 +5,7 @@ const ElasticSearchDBUtils = require('./elasticsearch/dbUtils.js');
 const BlockChainData = require('./blockchaindata/explorer.js');
 const BlockToDB = require("./datatransfer/blockToDB.js");
 const DBToElasticSearch = require("./datatransfer/dbToElasticsearch.js");
+const RestEndpoints = require("./datatransfer/RestEndpoints.js");
 
 //DBUtils
 var cassandraDBUtils = new CassandraDBUtils("Cassandra DBUtils created");
@@ -17,6 +18,7 @@ var blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
 //DTO's
 var blocktoDB = new BlockToDB(blockChainData, cassandraDBUtils);
 var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBUtils);
+var restEndpoints = new RestEndpoints(blockChainData);
 
 // Put data into DB
 //blocktoDB.putAllBlockDataIntoDB();      //   0-100
@@ -30,10 +32,16 @@ var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBU
 //dbToElasticSearch.putAllAddressDataIntoElasticSearch();
 //dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 
+let dataPromise = blockChainData.getTotalTransaction();
+dataPromise.then(function(dataFromNode){
+    let jsonData = JSON.parse(JSON.stringify(dataFromNode));
+    console.log(jsonData.num);
+});
+
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
-let dataPromise = blockChainData.getAssetIssueList();
-
-dataPromise.then(function(dataFromLocalNode){
-    console.log(dataFromLocalNode);
-});
+// let dataPromise = blockChainData.getAssetIssueList();
+//
+// dataPromise.then(function(dataFromLocalNode){
+//     console.log(dataFromLocalNode);
+// });

@@ -5,16 +5,12 @@ const {Block, Transaction, Account} = require("@tronprotocol/wallet-api/src/prot
 const { getBase58CheckAddress, signTransaction, passwordToAddress } = require("@tronprotocol/wallet-api/src/utils/crypto");
 const {Address ,EmptyMessage, NumberMessage} = require("@tronprotocol/wallet-api/src/protocol/api/api_pb");
 
-//const { Account } = require("@tronprotocol/wallet-api/src/protocol/core/Tron_pb");
-
 const Client = new HttpClient();
 
-var hostnameAndPort = {hostname:"127.0.0.1", port:"50051"};
-const GRPCClient = new GrpcClient(hostnameAndPort);
 
 class BlockChainData {
-	constructor(construction) {
-		console.log(construction);
+	constructor(hostnameAndPort) {
+		this.GRPCClient = new GrpcClient(hostnameAndPort);
 	}
 
   	//     HTTP FUNCTIONS  
@@ -61,7 +57,7 @@ class BlockChainData {
   	//     GRPC FUNCTIONS  
   	
 	async getBlockFromLocalNode(number){
-		let nativeBlock = await GRPCClient.getBlockByNumber(number);
+		let nativeBlock = await this.GRPCClient.getBlockByNumber(number);
 		return this._returnParsedBlockData(nativeBlock);
 	}
 
@@ -71,30 +67,30 @@ class BlockChainData {
 	}
 
 	async getNowBlock() {
-		return await GRPCClient.api.getNowBlock(new EmptyMessage());
+		return await this.GRPCClient.api.getNowBlock(new EmptyMessage());
 	}
 
 	async getAccount() {
 		let newAccount = new Account();
     	newAccount.setAccountName("hope");
-		let account = await GRPCClient.api.getAccount(newAccount);
+		let account = await this.GRPCClient.api.getAccount(newAccount);
 		return account.toObject();
 	}
 
 	async listAccounts() {
-		let accounts = await GRPCClient.api.listAccounts(new EmptyMessage())
+		let accounts = await this.GRPCClient.api.listAccounts(new EmptyMessage())
 		return accounts.toObject();
 	}
 
 	async listWitnesses(){
-		let witnesses = await GRPCClient.api.listWitnesses(new EmptyMessage())
+		let witnesses = await this.GRPCClient.api.listWitnesses(new EmptyMessage())
 		return witnesses.toObject();
 	}
 
 	async createAccount(accountData){
 		let newAccount = new Account();
     	newAccount.setAccountName("hope");
-		let account = await GRPCClient.api.createAccount(newAccount);
+		let account = await this.GRPCClient.api.createAccount(newAccount);
 	}
 
   	_returnParsedBlockData(nativeBlock){

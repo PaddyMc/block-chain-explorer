@@ -21,12 +21,14 @@ var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBU
 // Put data into DB
 //blocktoDB.putAllBlockDataIntoDB();      //   0-100
 //blocktoDB.putAllWitnessesIntoDB();
+//blocktoDB.putAllNodesIntoDB();
 //blocktoDB.putAllAccountsIntoDB();
 
 // Insert into elastic search
 //dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 //dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
 //dbToElasticSearch.putAllAddressDataIntoElasticSearch();
+//dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 

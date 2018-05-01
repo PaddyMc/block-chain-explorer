@@ -47,6 +47,22 @@ class ElasticSearchDBUtils {
 		}
 		_insertBulk(bulkRequest)
 	}
+
+	insertNodes(jsonData){
+		let bulkData;
+		let bulkRequest = [];
+		console.log(jsonData);
+		for(var i in jsonData["rows"]) {
+			var row = JSON.parse(jsonData["rows"][i]['[json]']);
+			bulkData = {
+				host: row.host,
+				port: row.port
+			};
+			bulkRequest.push({index: {_index: 'nodes', _type: 'node', _id: row.host}});
+			bulkRequest.push(bulkData);
+		}
+		_insertBulk(bulkRequest)
+	}
 }
 
 function _insertBulk(bulkRequest){

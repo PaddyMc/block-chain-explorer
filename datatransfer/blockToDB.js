@@ -8,7 +8,7 @@ class BlockToDB {
 	}
 
 	putAllWitnessesIntoDB(){
-		let that = this; 
+		let that = this;
 
 	    var allWitnessPromise = this.blockChainData.listWitnesses()
 	    allWitnessPromise.then(function(dataFromNode){
@@ -17,6 +17,20 @@ class BlockToDB {
 	            let params = that._buildParamsForWitnessInsertStatment(jsonData.witnessesList[i]);
 	            that.cassandraDBUtils.insertWitness(params)
 	        }
+	    });
+	}
+
+	// NODES
+	putAllNodesIntoDB(){
+		let that = this;
+
+	    var allNodesPromise = this.blockChainData.listNodes()
+	    allNodesPromise.then(function(dataFromNode){
+	        var jsonData = JSON.parse(JSON.stringify(dataFromNode));
+			for (var i = 0; i < jsonData.nodesList.length; i++) {
+				let params = that._buildParamsForNodeInsertStatment(jsonData.nodesList[i].address);
+				that.cassandraDBUtils.insertNode(params);
+			}
 	    });
 	}
 
@@ -55,7 +69,7 @@ class BlockToDB {
 
 	putAllBlockDataIntoDB(){
 		var that = this;
-		
+
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
 	    dataPromise.then(function(dataFromLocalNode){
 	    	//dataFromLocalNode.number
@@ -81,6 +95,12 @@ class BlockToDB {
 
 	_buildParamsForWitnessInsertStatment(dataFromNode){
 	    let params = [dataFromNode.address, dataFromNode.votecount, dataFromNode.pubkey, dataFromNode.url, dataFromNode.totalmissed, dataFromNode.latestblocknum, dataFromNode.latestslotnum, dataFromNode.isjobs];
+	    return params;
+	}
+
+	_buildParamsForNodeInsertStatment(dataFromNode){
+		let decodedHost = new Buffer(dataFromNode.host, 'base64').toString('ascii');
+	    let params = [decodedHost, dataFromNode.port.toString()];
 	    return params;
 	}
 }

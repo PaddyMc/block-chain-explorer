@@ -23,17 +23,21 @@ var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBU
 //blocktoDB.putAllWitnessesIntoDB();
 //blocktoDB.putAllNodesIntoDB();
 //blocktoDB.putAllAccountsIntoDB();
+//blocktoDB.putAllIssuedAssetsIntoDB();
 
 // Insert into elastic search
 //dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 //dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
 //dbToElasticSearch.putAllAddressDataIntoElasticSearch();
 //dbToElasticSearch.putAllNodeDataIntoElasticSearch();
+//dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
-let dataPromise = blockChainData.getAssetIssueList();
+/*let dataPromise = cassandraDBUtils.getAllIssuedAssets();;
 
 dataPromise.then(function(dataFromLocalNode){
     console.log(dataFromLocalNode);
-});
+});*/
+
+

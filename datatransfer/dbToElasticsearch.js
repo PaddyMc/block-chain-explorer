@@ -31,6 +31,15 @@ class DBToElasticSearch {
 	        that.elasticSearchDBUtils.insertNodes(jsonData);
 	    });
 	}
+
+	putAllIssuedAssetsIntoElasticSearch(){
+		let that = this;
+
+		var dataPromise = this.cassandraDBUtils.getAllIssuedAssets();
+		dataPromise.then(function(jsonData){
+	        that.elasticSearchDBUtils.insertIssuedAssets(jsonData);
+	    });
+	}
 }
 
 module.exports = DBToElasticSearch;

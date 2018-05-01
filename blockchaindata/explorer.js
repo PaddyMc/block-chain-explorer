@@ -19,7 +19,6 @@ class BlockChainData {
 		//this.GRPCClient = new GrpcClient(hostnameAndPort);
 		this.TronDatabaseClient = caller(`${this.hostname}:${this.port}`, DatabaseClient);
 		this.GRPCClient = caller(`${this.hostname}:${this.port}`, WalletClient);
-
 	}
 
   	//     GRPC FUNCTIONS 
@@ -60,6 +59,11 @@ class BlockChainData {
 	async getAssetIssueList(){
 		let assetIssueList = await this.GRPCClient.getAssetIssueList(new EmptyMessage());
 		return assetIssueList.toObject();
+  }
+
+	async listNodes(){
+		let nodes = await this.GRPCClient.api.listNodes(new EmptyMessage())
+		return nodes.toObject();
 	}
 
 	async createAccount(accountData){

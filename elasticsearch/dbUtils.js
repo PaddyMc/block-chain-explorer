@@ -51,7 +51,6 @@ class ElasticSearchDBUtils {
 	insertNodes(jsonData){
 		let bulkData;
 		let bulkRequest = [];
-		console.log(jsonData);
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 			bulkData = {
@@ -59,6 +58,30 @@ class ElasticSearchDBUtils {
 				port: row.port
 			};
 			bulkRequest.push({index: {_index: 'nodes', _type: 'node', _id: row.host}});
+			bulkRequest.push(bulkData);
+		}
+		_insertBulk(bulkRequest)
+	}
+
+	insertIssuedAssets(jsonData){
+		let bulkData;
+		let bulkRequest = [];
+		for(var i in jsonData["rows"]) {
+			var row = JSON.parse(jsonData["rows"][i]['[json]']);
+			bulkData = {
+				ownerAddress: row.ownerAddress,
+				name: row.name,
+				totalSupply: row.totalSupply,
+				trxNum: row.trxNum,
+				num: row.num,
+				startTime: row.startTime,
+				endTime: row.endTime,
+				decayRatio: row.decayRatio,
+				voteScore: row.voteScore,
+				description: row.description,
+				url: row.url,
+			};
+			bulkRequest.push({index: {_index: 'issuedassets', _type: 'node', _id: row.ownerAddress}});
 			bulkRequest.push(bulkData);
 		}
 		_insertBulk(bulkRequest)

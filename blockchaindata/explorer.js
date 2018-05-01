@@ -59,7 +59,7 @@ class BlockChainData {
 	async getAssetIssueList(){
 		let assetIssueList = await this.GRPCClient.getAssetIssueList(new EmptyMessage());
 		return assetIssueList.toObject();
-  }
+  	}
 
 	async listNodes(){
 		let nodes = await this.GRPCClient.api.listNodes(new EmptyMessage())

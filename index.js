@@ -18,20 +18,22 @@ var blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
 var blocktoDB = new BlockToDB(blockChainData, cassandraDBUtils);
 var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBUtils);
 
-
-// BLOCK DATA
+// Put data into DB
 //blocktoDB.putAllBlockDataIntoDB();      //   0-100
-//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
-
-
-// WITNESSES
 //blocktoDB.putAllWitnessesIntoDB();
-// dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
-// blocktoDB.putAllNodesIntoDB();
-dbToElasticSearch.putAllNodeDataIntoElasticSearch();
-
-// ADDRESSES
+//blocktoDB.putAllNodesIntoDB();
 //blocktoDB.putAllAccountsIntoDB();
+
+// Insert into elastic search
+//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+//dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
 //dbToElasticSearch.putAllAddressDataIntoElasticSearch();
+//dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
+
+let dataPromise = blockChainData.getDynamicProperties();
+
+dataPromise.then(function(dataFromLocalNode){
+    console.log(dataFromLocalNode);
+});

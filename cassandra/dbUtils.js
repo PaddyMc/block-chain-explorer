@@ -58,6 +58,24 @@ class CassandraDBUtils {
 	async getAllNodes(){
 		const result = await cassandraClient.execute(queryGetAllNodes);
 		return result;
+  }
+
+	batchInsertBlock(params){
+		//iterate through data to build queries
+
+/*		const queries = [
+		  {
+		    query: 'UPDATE user_profiles SET email=? WHERE key=?',
+		    params: [ emailAddress, 'hendrix' ]
+		  },
+		  {
+		    query: 'INSERT INTO user_track (key, text, date) VALUES (?, ?, ?)',
+		    params: [ 'hendrix', 'Changed email', new Date() ]
+		  }
+		];*/
+
+		client.batch(queries, { prepare: true })
+  			.then(result => console.log('Data updated on cluster'));
 	}
 }
 

@@ -73,7 +73,7 @@ class BlockToDB {
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
 	    dataPromise.then(function(dataFromLocalNode){
 	    	//dataFromLocalNode.number
-	        for(let i = 0; i<100; i++){
+	        for(let i = 0; i<2500; i++){
 	            that.putBlockIntoDatabaseFromLocalNodeByNumber(i);
 	        }
 	    });

@@ -2,62 +2,31 @@ import {HttpClient, GrpcClient} from "@tronprotocol/wallet-api";
 const {base64DecodeFromString, byteArray2hexStr, bytesToString} = require("@tronprotocol/wallet-api/src/utils/bytes");
 const deserializeTransaction = require("@tronprotocol/wallet-api/src/protocol/serializer").deserializeTransaction;
 const {Block, Transaction, Account} = require("@tronprotocol/wallet-api/src/protocol/core/Tron_pb");
-const { getBase58CheckAddress, signTransaction, passwordToAddress } = require("@tronprotocol/wallet-api/src/utils/crypto");
+const {getBase58CheckAddress, signTransaction, passwordToAddress} = require("@tronprotocol/wallet-api/src/utils/crypto");
 const {Address ,EmptyMessage, NumberMessage} = require("@tronprotocol/wallet-api/src/protocol/api/api_pb");
+
+const {WalletClient, DatabaseClient} = require("@tronprotocol/wallet-api/src/protocol/api/api_grpc_pb");
+const caller = require('grpc-caller');
 
 const Client = new HttpClient();
 
 
 class BlockChainData {
 	constructor(hostnameAndPort) {
-		this.GRPCClient = new GrpcClient(hostnameAndPort);
+		this.hostname = hostnameAndPort.hostname;
+    	this.port = hostnameAndPort.port;
+		
+		//this.GRPCClient = new GrpcClient(hostnameAndPort);
+		this.TronDatabaseClient = caller(`${this.hostname}:${this.port}`, DatabaseClient);
+		this.GRPCClient = caller(`${this.hostname}:${this.port}`, WalletClient);
 	}
 
-  	//     HTTP FUNCTIONS
-
-	async getLatestBlock() {
-		let latestBlock = await Client.getLatestBlock();
-		console.log(latestBlock);
-	}
-
-	async getBlockByNum(number) {
-		let blockByNum = await Client.getBlockByNum(number);
-		console.log(blockByNum);
-	}
-
-	async getNodes(){
-		let allNodes = await Client.getNodes();
-		return allNodes
-	}
-
-	async getAllBlocksAsBulkRequest(){
-		let latestBlock = await Client.getLatestBlock();
-
-		let blockData;
-		let bulkRequest = [];
-
-		//change here for testing!
-		for(var i = 20; i < 30; i++){
-			let currentBlock = await Client.getBlockByNum(i);
-			blockData = {
-		    	parentHash: currentBlock.parentHash,
-		    	number: currentBlock.number,
-		    	time: currentBlock.time,
-		    	witnessAddress: currentBlock.witnessAddress,
-		    	transactions: currentBlock.transactions,
-		    	transactionsCount: currentBlock.transactionsCount
-		    };
-		    bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: currentBlock.number}});
-		    bulkRequest.push(blockData);
-		}
-
-		return bulkRequest;
-  	}
-
-  	//     GRPC FUNCTIONS
+  	//     GRPC FUNCTIONS 
 
 	async getBlockFromLocalNode(number){
-		let nativeBlock = await this.GRPCClient.getBlockByNumber(number);
+		let message = new NumberMessage();
+    	message.setNum(number);
+		let nativeBlock = await this.GRPCClient.getBlockByNum(message);
 		return this._returnParsedBlockData(nativeBlock);
 	}
 
@@ -67,23 +36,23 @@ class BlockChainData {
 	}
 
 	async getNowBlock() {
-		return await this.GRPCClient.api.getNowBlock(new EmptyMessage());
+		return await this.GRPCClient.getNowBlock(new EmptyMessage());
 	}
 
 	async getAccount() {
 		let newAccount = new Account();
     	newAccount.setAccountName("hope");
-		let account = await this.GRPCClient.api.getAccount(newAccount);
+		let account = await this.GRPCClient.getAccount(newAccount);
 		return account.toObject();
 	}
 
 	async listAccounts() {
-		let accounts = await this.GRPCClient.api.listAccounts(new EmptyMessage())
+		let accounts = await this.GRPCClient.listAccounts(new EmptyMessage())
 		return accounts.toObject();
 	}
 
 	async listWitnesses(){
-		let witnesses = await this.GRPCClient.api.listWitnesses(new EmptyMessage())
+		let witnesses = await this.GRPCClient.listWitnesses(new EmptyMessage())
 		return witnesses.toObject();
 	}
 
@@ -95,8 +64,29 @@ class BlockChainData {
 	async createAccount(accountData){
 		let newAccount = new Account();
     	newAccount.setAccountName("hope");
-		let account = await this.GRPCClient.api.createAccount(newAccount);
+		let account = await this.GRPCClient.createAccount(newAccount);
 	}
+
+	//     DATABASE FUNCTIONS
+
+	async getDynamicProperties(){
+		let dynamicProperties = await this.TronDatabaseClient.getDynamicProperties(new EmptyMessage())
+		return dynamicProperties.toObject();
+	}
+
+	async getBlockReference(){
+		let blockReference = await this.TronDatabaseClient.getBlockReference(new EmptyMessage())
+		return blockReference.toObject();
+	}
+
+	async getBlockFromTronDataBaseByNumber(number){
+		let message = new NumberMessage();
+    	message.setNum(number);
+		let block = await this.TronDatabaseClient.getBlockByNum(message);
+		return block.toObject();
+	}
+
+	//     END DATABASE 
 
   	_returnParsedBlockData(nativeBlock){
   		let transactions = [];

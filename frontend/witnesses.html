@@ -17,25 +17,24 @@
          <div id="input">
              <label> Search: </label>
              <input type="text" class="form-control" id="search"/>
-             <br></br>
+             </br>
              <div>
                 <ul class="col-md-6">
-                   <li><input class="" type="radio" name="type" id="type" value="address" checked> address </li>
-                   <li><input class="" type="radio" name="type" id="type" value="votecount" checked> voteCount </li>
-                   <li><input class="" type="radio" name="type" id="type" value="pubkey" checked> pubKey </li>
-                   <li><input class="" type="radio" name="type" id="type" value="url" checked> url </li>
+                   <input class="" type="radio" name="type" id="type" value="address" checked> address </br>
+                   <input class="" type="radio" name="type" id="type" value="votecount" checked> voteCount </br>
+                   <input class="" type="radio" name="type" id="type" value="pubkey" checked> pubKey </br>
+                   <input class="" type="radio" name="type" id="type" value="url" checked> url </br>
                 </ul>
                 <ul class="col-md-6">
-                   <li><input class="" type="radio" name="type" id="type" value="totalmissed" checked> totalMissed</li>
-                   <li><input class="" type="radio" name="type" id="type" value="latestblocknum" checked> latestblocknum</li>
-                   <li><input class="" type="radio" name="type" id="type" value="latestslotnum" checked> latestSlotNum</li>
-                   <li><input class="" type="radio" name="type" id="type" value="isjobs" checked> isJobs</li>
+                   <input class="" type="radio" name="type" id="type" value="totalmissed" checked> totalMissed </br>
+                   <input class="" type="radio" name="type" id="type" value="latestblocknum" checked> latestblocknum </br>
+                   <input class="" type="radio" name="type" id="type" value="latestslotnum" checked> latestSlotNum </br>
+                   <input class="" type="radio" name="type" id="type" value="isjobs" checked> isJobs </br>
                 </ul>
              </div>
-             </br>
-
-             <input class="btn btn-primary" type="submit" onclick="doSearch(document.getElementById('search').value, getRadioButtonValue('type'), 'witnesses');"/>
          </div>
+         
+         <input class="btn btn-primary" type="submit" onclick="doSearch(document.getElementById('search').value, getRadioButtonValue('type'), 'witnesses');"/>
          
          <div id="searchCount"></div>
       </div>

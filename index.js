@@ -7,6 +7,7 @@ const BlockToDB = require("./datatransfer/blockToDB.js");
 const DBToElasticSearch = require("./datatransfer/dbToElasticsearch.js");
 const BlockToElastic = require("./datatransfer/blockToElastic.js");
 
+
 //DBUtils
 var cassandraDBUtils = new CassandraDBUtils("Cassandra DBUtils created");
 var elasticSearchDBUtils = new ElasticSearchDBUtils("ElasticSearch DBUtils created");
@@ -19,6 +20,7 @@ var blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
 var blocktoDB = new BlockToDB(blockChainData, cassandraDBUtils);
 var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBUtils);
 var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
+
 
 // Put data into DB
 //blocktoDB.putAllBlockDataIntoDB();      //   0-100
@@ -45,8 +47,8 @@ blockToElastic.putTotalTransactionIntoElastic();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
-// let dataPromise = blockChainData.getAssetIssueList();
-//
+// let dataPromise = blockChainData.listWitnesses();
+
 // dataPromise.then(function(dataFromLocalNode){
 //     console.log(dataFromLocalNode);
 // });

@@ -5,7 +5,7 @@ class BlockToElastic {
 		this.elasticDBUtils = ElasticDBUtils;
 	}
 
-	async putTotalTransactionIntoElastic(){
+	putTotalTransactionIntoElastic(){
 		let that = this;
 
 	    var totalTransactionPromise = this.blockChainData.getTotalTransaction()

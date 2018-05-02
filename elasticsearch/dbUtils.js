@@ -81,9 +81,20 @@ class ElasticSearchDBUtils {
 				description: row.description,
 				url: row.url,
 			};
-			bulkRequest.push({index: {_index: 'issuedassets', _type: 'node', _id: row.ownerAddress}});
+			bulkRequest.push({index: {_index: 'issuedassets', _type: 'issuedasset', _id: row.ownerAddress}});
 			bulkRequest.push(bulkData);
 		}
+		_insertBulk(bulkRequest)
+	}
+
+	insertTotalTransaction(numOfTransactions){
+		let bulkData = {
+			num: numOfTransactions,
+		};
+		let bulkRequest = [];
+		bulkRequest.push({index: {_index: 'transactions', _type: 'transaction', _id: "totalTransaction"}});
+		bulkRequest.push(bulkData);
+
 		_insertBulk(bulkRequest)
 	}
 }

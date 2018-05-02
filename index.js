@@ -5,7 +5,7 @@ const ElasticSearchDBUtils = require('./elasticsearch/dbUtils.js');
 const BlockChainData = require('./blockchaindata/explorer.js');
 const BlockToDB = require("./datatransfer/blockToDB.js");
 const DBToElasticSearch = require("./datatransfer/dbToElasticsearch.js");
-const RestEndpoints = require("./datatransfer/RestEndpoints.js");
+const BlockToElastic = require("./datatransfer/blockToElastic.js");
 
 //DBUtils
 var cassandraDBUtils = new CassandraDBUtils("Cassandra DBUtils created");
@@ -18,7 +18,7 @@ var blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
 //DTO's
 var blocktoDB = new BlockToDB(blockChainData, cassandraDBUtils);
 var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBUtils);
-var restEndpoints = new RestEndpoints(blockChainData);
+var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 
 // Put data into DB
 //blocktoDB.putAllBlockDataIntoDB();      //   0-100
@@ -33,6 +33,9 @@ var restEndpoints = new RestEndpoints(blockChainData);
 //dbToElasticSearch.putAllAddressDataIntoElasticSearch();
 //dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 //dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
+
+// Insert from block into elastic search
+blockToElastic.putTotalTransactionIntoElastic();
 
 // let dataPromise = blockChainData.getTotalTransaction();
 // dataPromise.then(function(dataFromNode){

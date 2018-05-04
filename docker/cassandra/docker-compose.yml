@@ -1,0 +1,43 @@
+version: '2.2'
+services:
+
+    cassandra-1:
+      hostname: cassandra-1
+      image: caeldock/casstest:latest
+      ports:
+        - 9042:9042
+      expose:
+        - 7000
+        - 7001
+        - 7199
+        - 9042
+        - 9160
+      tty: true
+      # volumes:
+      #   - cassdata1:/usr/share/cassandra/data
+
+    # cassandra-2:
+    #   hostname: cassandra-2
+    #   image: caeldock/casstest:latest
+    #   environment:
+    #     - CASSANDRA_SEEDS=cassandra-1
+    #   links:
+    #     - cassandra-1
+    #   # ports:
+    #   #   - 9043:9042
+    #   expose:
+    #     - 7000
+    #     - 7001
+    #     - 7199
+    #     - 9042
+    #     - 9160
+    #   tty: true
+    #   volumes:
+    #     - cassdata2:/usr/share/cassandra/data
+
+
+# volumes:
+#   cassdata1:
+#     driver: local
+#   cassdata2:
+#     driver: local

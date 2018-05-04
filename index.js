@@ -24,7 +24,7 @@ var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 
 // Put data into DB
 //blocktoDB.putAllBlockDataIntoDB();      //   0-100
-//blocktoDB.putAllWitnessesIntoDB();
+blocktoDB.putAllWitnessesIntoDB();
 //blocktoDB.putAllNodesIntoDB();
 //blocktoDB.putAllAccountsIntoDB();
 //blocktoDB.putAllIssuedAssetsIntoDB();
@@ -37,7 +37,7 @@ var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 //dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
 
 // Insert from block into elastic search
-blockToElastic.putTotalTransactionIntoElastic();
+//blockToElastic.putTotalTransactionIntoElastic();
 
 // let dataPromise = blockChainData.getTotalTransaction();
 // dataPromise.then(function(dataFromNode){
@@ -47,8 +47,8 @@ blockToElastic.putTotalTransactionIntoElastic();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
-// let dataPromise = blockChainData.listWitnesses();
+/*let dataPromise = blockChainData.listWitnesses();
 
-// dataPromise.then(function(dataFromLocalNode){
-//     console.log(dataFromLocalNode);
-// });
+dataPromise.then(function(dataFromLocalNode){
+    console.log(dataFromLocalNode);
+});*/

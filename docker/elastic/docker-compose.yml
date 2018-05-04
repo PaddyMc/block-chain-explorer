@@ -11,7 +11,10 @@ services:
       memlock:
         soft: -1
         hard: -1
+    working_dir: /scripts
+
     volumes:
+      - ./elastic.sh:/scripts/elastic.sh
       - esdata1:/usr/share/elasticsearch/data
     ports:
       - 9200:9200

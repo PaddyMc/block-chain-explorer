@@ -1,0 +1,98 @@
+version: '2.2'
+services:
+  tron-node:
+    image: caeldock/tron-node
+    container_name: tron-node
+    ports:
+      - 18888:18888
+      - 50051:50051
+    tty: true
+    command: ./gradlew run -Pwitness
+
+
+  cassandra-1:
+    hostname: cassandra-1
+    image: cassandra:3.11
+    ports:
+      - 7000
+      - 7001
+      - 7199
+      - 9042:9042
+      - 9160
+    working_dir: /scripts
+
+    tty: true
+    volumes:
+      - ./cassandra/cass.sh:/scripts/cass.sh
+      - ./cassandra/cass.sql:/scripts/cass.sql
+      - cassdata1:/usr/share/cassandra/data
+
+  cassandra-2:
+    hostname: cassandra-2
+    image: cassandra:3.11
+    environment:
+      - CASSANDRA_SEEDS=cassandra-1
+    links:
+      - cassandra-1
+    expose:
+      - 7000
+      - 7001
+      - 7199
+      - 9042
+      - 9160
+    tty: true
+    volumes:
+      - cassdata2:/usr/share/cassandra/data
+  
+
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+    container_name: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    working_dir: /scripts
+
+    volumes:
+      - ./elastic/elastic.sh:/scripts/elastic.sh
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+    container_name: elasticsearch2
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+
+
+volumes:
+  cassdata1:
+    driver: local
+  cassdata2:
+    driver: local
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
+
+networks:
+  esnet:

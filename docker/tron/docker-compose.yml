@@ -7,3 +7,4 @@ services:
       - 18888:18888
       - 50051:50051
     tty: true
+    command: ./gradlew run -Pwitness 

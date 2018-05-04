@@ -1,4 +1,3 @@
-DROP KEYSPACE blockchainexplorer;
 CREATE KEYSPACE IF NOT EXISTS blockchainexplorer WITH REPLICATION = { 'class' : 'NetworkTopologyStrategy', 'datacenter1' : 3 };
 USE blockchainexplorer;
 

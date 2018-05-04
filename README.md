@@ -37,4 +37,6 @@
   <li>curl -X DELETE 'http://localhost:9200/_all'</li>
 </ul>
 
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id
+
 

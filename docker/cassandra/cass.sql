@@ -21,6 +21,22 @@ CREATE TYPE IF NOT EXISTS contracttype (
     participateassetissuecontract int,
 );
 
+CREATE TYPE IF NOT EXISTS voteslist (
+    voteaddress text,
+    votecount bigint,
+);
+
+CREATE TABLE IF NOT EXISTS accounts (
+    accountname text,
+    type int,
+    address text,
+    balance bigint,
+    voteslist map<text, frozen<voteslist>>,
+    assetmap map<text, bigint>,
+    latestoprationtime int,
+    PRIMARY KEY (address)
+);
+
 CREATE TABLE IF NOT EXISTS block (
     parentHash text,
     number int,
@@ -65,6 +81,8 @@ CREATE TABLE IF NOT EXISTS assetissues (
     url text,
     PRIMARY KEY (ownerAddress)
 );
+
+-- INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime) VALUES ('', 0, 'oA+/5jvnOQN7lB5btt3L+5PMa+wf', 1000000000000, {'asd' : {voteaddress : 'oFQwo/CJFU6eGC3db+E2piMhryKn' , votecount: 200000} , 'asd' : {voteaddress : 'oFQwo/CJFU6eGC3db+E2piMhryKn' , votecount: 200000}}, {'TRX': 27 , 'Super Tron': 100} , 0);
 
 -- INSERT INTO assetissues (ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url) VALUES ('oEeI3RNeKFjDe0jFJXI9Zgt6YydY', 'VFJY', 10000, 1000000000, 0, 0, 0, 0, 0, 'VHJvbml4', 'aHR0cHM6Ly90d2l0dGVyLmNvbS9Ba29zY2kx');
 

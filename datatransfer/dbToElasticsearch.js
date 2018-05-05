@@ -40,6 +40,15 @@ class DBToElasticSearch {
 	        that.elasticSearchDBUtils.insertIssuedAssets(jsonData);
 	    });
 	}
+
+	putAllAccountsDataIntoElasticSearch(){
+		let that = this;
+
+		var dataPromise = this.cassandraDBUtils.getAllAccounts();
+		dataPromise.then(function(jsonData){
+	        that.elasticSearchDBUtils.insertAccounts(jsonData);
+	    });
+	}
 }
 
 module.exports = DBToElasticSearch;

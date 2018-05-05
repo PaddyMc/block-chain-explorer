@@ -12,9 +12,8 @@ class BlockToDB {
 
 	    var allWitnessPromise = this.blockChainData.listWitnesses()
 	    allWitnessPromise.then(function(dataFromNode){
-	        var jsonData = JSON.parse(JSON.stringify(dataFromNode));
-	        for (var i = 0; i < jsonData.witnessesList.length; i++) {
-	            let params = that._buildParamsForWitnessInsertStatment(jsonData.witnessesList[i]);
+	        for (var i = 0; i < dataFromNode.witnessesList.length; i++) {
+	            let params = that._buildParamsForWitnessInsertStatment(dataFromNode.witnessesList[i]);
 	            that.cassandraDBUtils.insertWitness(params)
 	        }
 	    });
@@ -26,9 +25,8 @@ class BlockToDB {
 
 	    var allNodesPromise = this.blockChainData.listNodes()
 	    allNodesPromise.then(function(dataFromNode){
-	        var jsonData = JSON.parse(JSON.stringify(dataFromNode));
-			for (var i = 0; i < jsonData.nodesList.length; i++) {
-				let params = that._buildParamsForNodeInsertStatment(jsonData.nodesList[i].address);
+			for (var i = 0; i < dataFromNode.nodesList.length; i++) {
+				let params = that._buildParamsForNodeInsertStatment(dataFromNode.nodesList[i].address);
 				that.cassandraDBUtils.insertNode(params);
 			}
 	    });
@@ -40,10 +38,9 @@ class BlockToDB {
 
 		var allIssuedAssetsPromise = this.blockChainData.getAssetIssueList();
 		allIssuedAssetsPromise.then(function(dataFromNode){
-	        var jsonData = JSON.parse(JSON.stringify(dataFromNode));
 	        
-			for (var i = 0; i < jsonData.assetissueList.length; i++) {
-				let params = that._buildParamsForIssuedAssetsInsertStatment(jsonData.assetissueList[i]);
+			for (var i = 0; i < dataFromNode.assetissueList.length; i++) {
+				let params = that._buildParamsForIssuedAssetsInsertStatment(dataFromNode.assetissueList[i]);
 				that.cassandraDBUtils.insertAssetIssue(params);
 			}
 	    });
@@ -54,11 +51,11 @@ class BlockToDB {
 		let that = this;
 
 	    let allAccountsPromise = this.blockChainData.listAccounts()
-	    allAccountsPromise.then(function(jsonData){
-	        console.log(jsonData);
-
-	        // ToDo : Build table for accounts
-
+	    allAccountsPromise.then(function(dataFromNode){
+	        for(let i = 0;i<dataFromNode.accountsList.length;i++){
+	        	let params = that._buildParamsForAccountInsertStatment(dataFromNode.accountsList[i]);
+	        	that.cassandraDBUtils.insertAccount(params);
+	        }
 	    });
 	}
 
@@ -78,7 +75,6 @@ class BlockToDB {
 	    var dataPromiseByNumber = this.blockChainData.getBlockFromLocalNode(number);
 	    dataPromiseByNumber.then(function(dataFromLocalNode){
 	        const params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
-	        //console.log(params.contractType);
 	        that.cassandraDBUtils.insertBlock(params);
 	    });
 	}
@@ -89,7 +85,7 @@ class BlockToDB {
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
 	    dataPromise.then(function(dataFromLocalNode){
 	    	//dataFromLocalNode.number
-	        for(let i = 0; i<=dataFromLocalNode.number; i++){
+	        for(let i = 0; i<dataFromLocalNode.number; i++){
 	            that.putBlockIntoDatabaseFromLocalNodeByNumber(i);
 	        }
 	    });
@@ -131,6 +127,22 @@ class BlockToDB {
 		dataFromNode.url = new Buffer(dataFromNode.url, 'base64').toString();
 		//console.log(dataFromNode.ownerAddress);
 		let params = [dataFromNode.ownerAddress, dataFromNode.name, dataFromNode.totalSupply, dataFromNode.trxNum, dataFromNode.num, dataFromNode.startTime, dataFromNode.endTime, dataFromNode.decayRatio, dataFromNode.voteScore, dataFromNode.description, dataFromNode.url]
+		return params;
+	}
+
+	_buildParamsForAccountInsertStatment(dataFromNode){
+		let votesList = {};
+		let assetMap = {};
+
+		for (let i = 0; i < dataFromNode.votesList.length; i++) {
+	        votesList[i] = dataFromNode.votesList[i];
+	    }
+
+	    for (let i = 0; i < dataFromNode.assetMap.length; i++) {
+	        assetMap[dataFromNode.assetMap[i][0]] = dataFromNode.assetMap[i][1];
+	    }
+
+		let params = [dataFromNode.accountName, dataFromNode.type, dataFromNode.address, dataFromNode.balance, votesList, assetMap, dataFromNode.latestOprationTime];
 		return params;
 	}
 }

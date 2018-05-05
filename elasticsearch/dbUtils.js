@@ -70,19 +70,39 @@ class ElasticSearchDBUtils {
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 			bulkData = {
-				ownerAddress: row.ownerAddress,
+				ownerAddress: row.owneraddress,
 				name: row.name,
-				totalSupply: row.totalSupply,
-				trxNum: row.trxNum,
+				totalSupply: row.totalsupply,
+				trxNum: row.trxnum,
 				num: row.num,
-				startTime: row.startTime,
-				endTime: row.endTime,
-				decayRatio: row.decayRatio,
-				voteScore: row.voteScore,
+				startTime: row.starttime,
+				endTime: row.endtime,
+				decayRatio: row.decayratio,
+				voteScore: row.votescore,
 				description: row.description,
 				url: row.url,
 			};
 			bulkRequest.push({index: {_index: 'issuedassets', _type: 'issuedasset', _id: row.ownerAddress}});
+			bulkRequest.push(bulkData);
+		}
+		_insertBulk(bulkRequest)
+	}
+
+	insertAccounts(jsonData){
+		let bulkData;
+		let bulkRequest = [];
+		for(var i in jsonData["rows"]) {
+			var row = JSON.parse(jsonData["rows"][i]['[json]']);
+			bulkData = {
+				accountname: row.accountname,
+				type: row.type,
+				address: row.address,
+				balance: row.balance,
+				voteslist: row.voteslist,
+				assetmap: row.assetmap,
+				latestoprationtime: row.latestoprationtime,
+			};
+			bulkRequest.push({index: {_index: 'accounts', _type: 'account', _id: row.ownerAddress}});
 			bulkRequest.push(bulkData);
 		}
 		_insertBulk(bulkRequest)

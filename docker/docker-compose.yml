@@ -1,16 +1,14 @@
 version: '2.2'
 services:
-  tron-node:
-    image: caeldock/tron-node
-    container_name: tron-node
-    ports:
-      - 18888:18888
-      - 50051:50051
-    tty: true
-    #security-opt:
-      #change to docker-default for prod
-      #- apparmor=unconfined
-    command: ./gradlew run -Pwitness
+  # tron-node:
+  #   image: caeldock/tron-node
+  #   container_name: tron-node
+  #   ports:
+  #     - 18888:18888
+  #     - 50051:50051
+  #   tty: true
+  #   #-Pwitness
+  #   command: ./gradlew run
 
 
   cassandra-1:
@@ -65,8 +63,6 @@ services:
         soft: -1
         hard: -1
     working_dir: /scripts
-    #security_opt:
-     # - apparmor=wparmor
     volumes:
       - ./elastic/elastic.sh:/scripts/elastic.sh
       - esdata1:/usr/share/elasticsearch/data

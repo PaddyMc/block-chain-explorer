@@ -16,6 +16,8 @@ const queryGetAllNodes = 'SELECT JSON host, port FROM nodes';
 const queryGetAllAssetIssue = 'SELECT JSON ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url FROM assetissues';
 const queryInsertAssetIssue = 'INSERT INTO assetissues (ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
+const queryGetAllAccounts = 'SELECT JSON accountname, type, address, balance, voteslist, assetmap, latestoprationtime FROM accounts';
+const queryInsertAccount = 'INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime) VALUES (?, ?, ?, ?, ?, ?, ?);';
 
 class CassandraDBUtils {
 	constructor(construction) {
@@ -39,6 +41,11 @@ class CassandraDBUtils {
 
 	async getAllNodes(){
 		const result = await cassandraClient.execute(queryGetAllNodes);
+		return result;
+  	}
+
+  	async getAllAccounts(){
+		const result = await cassandraClient.execute(queryGetAllAccounts);
 		return result;
   	}
 
@@ -74,6 +81,14 @@ class CassandraDBUtils {
 
 		cassandraClient.execute(queryInsertAssetIssue, params, { prepare: true })
 	  		.then(result => console.log('Node added to the cluster'));
+
+	}
+
+	insertAccount(params){
+		//const params = [ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url];
+
+		cassandraClient.execute(queryInsertAccount, params, { prepare: true })
+	  		.then(result => console.log('Account added to the cluster'));
 
 	}
 

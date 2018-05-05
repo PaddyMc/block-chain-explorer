@@ -1,4 +1,3 @@
-import {HttpClient, GrpcClient} from "@tronprotocol/wallet-api";
 const {base64DecodeFromString, byteArray2hexStr, bytesToString} = require("@tronprotocol/wallet-api/src/utils/bytes");
 const deserializeTransaction = require("@tronprotocol/wallet-api/src/protocol/serializer").deserializeTransaction;
 const {Block, Transaction, Account} = require("@tronprotocol/wallet-api/src/protocol/core/Tron_pb");
@@ -7,8 +6,6 @@ const {Address ,EmptyMessage, NumberMessage} = require("@tronprotocol/wallet-api
 
 const {WalletClient, DatabaseClient} = require("@tronprotocol/wallet-api/src/protocol/api/api_grpc_pb");
 const caller = require('grpc-caller');
-
-const Client = new HttpClient();
 
 
 class BlockChainData {

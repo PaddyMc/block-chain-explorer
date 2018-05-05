@@ -7,6 +7,9 @@ services:
       - 18888:18888
       - 50051:50051
     tty: true
+    #security-opt:
+      #change to docker-default for prod
+      #- apparmor=unconfined
     command: ./gradlew run -Pwitness
 
 
@@ -62,7 +65,8 @@ services:
         soft: -1
         hard: -1
     working_dir: /scripts
-
+    #security_opt:
+     # - apparmor=wparmor
     volumes:
       - ./elastic/elastic.sh:/scripts/elastic.sh
       - esdata1:/usr/share/elasticsearch/data

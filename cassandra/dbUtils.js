@@ -3,8 +3,9 @@ const cassandra = require('cassandra-driver');
 const cassandraClient = new cassandra.Client({ contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' });
 
 const queryGetTransactionsFromBlock = 'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
-const queryGetAllBlocksFromDB = 'SELECT JSON parentHash, number, time, witnessAddress, transactionsCount, transactions FROM block';
-const queryInsertBlock = 'INSERT INTO block (parentHash, number, time, witnessAddress, transactionsCount, transactions) VALUES (?, ?, ?, ?, ?, ?);';
+
+const queryGetAllBlocksFromDB = 'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions FROM block';
+const queryInsertBlock = 'INSERT INTO block (parentHash, number, time, contracttype,  witnessAddress, transactionsCount, transactions) VALUES (?, ?, ?, ?, ?, ?, ?);';
 
 const queryInsertWitness = 'INSERT INTO witness (address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
 const queryGetAllWitnesses = 'SELECT JSON address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
@@ -26,6 +27,21 @@ class CassandraDBUtils {
 		return result;
 	}
 
+	async getAllIssuedAssets(){
+		const result = await cassandraClient.execute(queryGetAllAssetIssue);
+		return result;
+	}
+
+	async getAllWitnesses(){
+		const result = await cassandraClient.execute(queryGetAllWitnesses);
+		return result;
+	}
+
+	async getAllNodes(){
+		const result = await cassandraClient.execute(queryGetAllNodes);
+		return result;
+  	}
+
 	getTransactionsFromBlockNumber(blockNum){
 		cassandraClient.execute(queryGetTransactionsFromBlock, [ blockNum ], { prepare: true })
 		.then(result => {
@@ -35,20 +51,10 @@ class CassandraDBUtils {
 	}
 
 	insertBlock(params){
-		//const params = [parentHash, number, time, witnessAddress, transactionsCount, transactions];
+		//const params = [parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions];
 
 		cassandraClient.execute(queryInsertBlock, params, { prepare: true })
 	  		.then(result => console.log('Row updated on the cluster'));
-	}
-
-	async getAllIssuedAssets(){
-		const result = await cassandraClient.execute(queryGetAllAssetIssue);
-		return result;
-	}
-
-	async getAllWitnesses(){
-		const result = await cassandraClient.execute(queryGetAllWitnesses);
-		return result;
 	}
 
 	insertWitness(params){
@@ -70,11 +76,6 @@ class CassandraDBUtils {
 	  		.then(result => console.log('Node added to the cluster'));
 
 	}
-
-	async getAllNodes(){
-		const result = await cassandraClient.execute(queryGetAllNodes);
-		return result;
-  	}
 
 	batchInsertBlock(params){
 		//iterate through data to build queries

@@ -22,31 +22,40 @@ var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBU
 var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 
 
+function putAllDataIntoDB(){
+	blocktoDB.putAllBlockDataIntoDB();      
+	blocktoDB.putAllWitnessesIntoDB();
+	blocktoDB.putAllNodesIntoDB();
+	blocktoDB.putAllAccountsIntoDB();
+	blocktoDB.putAllIssuedAssetsIntoDB();
+}
+
+function putAllDataIntoElastic(){
+	dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+	dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
+	dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
+	dbToElasticSearch.putAllNodeDataIntoElasticSearch();
+	dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
+}
+
+//putAllDataIntoDB();
+putAllDataIntoElastic();
+
 // Put data into DB
-//blocktoDB.putAllBlockDataIntoDB();      //   0-100
-//blocktoDB.putAllWitnessesIntoDB();
-//blocktoDB.putAllNodesIntoDB();
-blocktoDB.putAllAccountsIntoDB();
-//blocktoDB.putAllIssuedAssetsIntoDB();
+// blocktoDB.putAllBlockDataIntoDB();      //   0-100
+// blocktoDB.putAllWitnessesIntoDB();
+// blocktoDB.putAllNodesIntoDB();
+// blocktoDB.putAllAccountsIntoDB();
+// blocktoDB.putAllIssuedAssetsIntoDB();
 
 // Insert into elastic search
-//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+// dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 // dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
-//dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
+// dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
 // dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 // dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
 
-// Insert from block into elastic search
-//blockToElastic.putTotalTransactionIntoElastic();
-
-// let dataPromise = blockChainData.getTotalTransaction();
-// dataPromise.then(function(dataFromNode){
-//     let jsonData = JSON.parse(JSON.stringify(dataFromNode));
-//     console.log(jsonData.num);
-// });
-
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
-
 /*let dataPromise = cassandraDBUtils.getAllAddresses();
 
 dataPromise.then(function(dataFromLocalNode){

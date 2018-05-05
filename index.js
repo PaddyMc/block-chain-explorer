@@ -24,7 +24,7 @@ var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 
 // Put data into DB
 //blocktoDB.putAllBlockDataIntoDB();      //   0-100
-blocktoDB.putAllWitnessesIntoDB();
+//blocktoDB.putAllWitnessesIntoDB();
 //blocktoDB.putAllNodesIntoDB();
 //blocktoDB.putAllAccountsIntoDB();
 //blocktoDB.putAllIssuedAssetsIntoDB();
@@ -47,8 +47,9 @@ blocktoDB.putAllWitnessesIntoDB();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
-/*let dataPromise = blockChainData.listWitnesses();
+/*let dataPromise = blockChainData.getLatestBlockFromLocalNode();
 
 dataPromise.then(function(dataFromLocalNode){
     console.log(dataFromLocalNode);
-});*/
+});
+*/

@@ -78,7 +78,7 @@ class BlockToDB {
 	    var dataPromiseByNumber = this.blockChainData.getBlockFromLocalNode(number);
 	    dataPromiseByNumber.then(function(dataFromLocalNode){
 	        const params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
-	        //console.log(params);
+	        //console.log(params.contractType);
 	        that.cassandraDBUtils.insertBlock(params);
 	    });
 	}
@@ -89,7 +89,7 @@ class BlockToDB {
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
 	    dataPromise.then(function(dataFromLocalNode){
 	    	//dataFromLocalNode.number
-	        for(let i = 0; i<2500; i++){
+	        for(let i = 0; i<=dataFromLocalNode.number; i++){
 	            that.putBlockIntoDatabaseFromLocalNodeByNumber(i);
 	        }
 	    });
@@ -97,6 +97,7 @@ class BlockToDB {
 
 	_buildParamsForBlockInsertStatment(dataFromLocalNode){
 	    let transactions = {};
+	    let contracttypes = {};
 
 	    for (let i = 0; i < dataFromLocalNode.transactions.length; i++) {
 	        let replaceFrom = JSON.stringify(dataFromLocalNode.transactions[i]).replace(/from/, 'fromaddress');
@@ -104,8 +105,12 @@ class BlockToDB {
 	        let newArray = JSON.parse(replaceTo);
 	        transactions[i] = newArray;
 	    }
+	    contracttypes["contracttypes"] = dataFromLocalNode.contractType;
 
-	    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions];
+	    let contractTypeToLower = JSON.stringify(contracttypes).toLowerCase();
+	    let contractTypesParsed = JSON.parse(contractTypeToLower);
+
+	    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, contractTypesParsed, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions];
 	    return params;
 	}
 

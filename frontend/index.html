@@ -65,6 +65,14 @@
                   output += "witnessAddress: " + response.hits.hits[i]._source.witnessAddress + '</br>';
                   output += "transactionsCount: " + response.hits.hits[i]._source.transactionsCount + '</br>';
 
+                  output += "contractType: " + '</br>';
+                  output += " - accountcreatecontract: " + response.hits.hits[i]._source.contractType.contracttypes.accountcreatecontract + '</br>';
+                  output += " - transfercontract: " + response.hits.hits[i]._source.contractType.contracttypes.transfercontract + '</br>';
+                  output += " - transferassetcontract: " + response.hits.hits[i]._source.contractType.contracttypes.transferassetcontract + '</br>';
+                  output += " - voteassetcontract: " + response.hits.hits[i]._source.contractType.contracttypes.voteassetcontract + '</br>';
+                  output += " - votewitnesscontract: " + response.hits.hits[i]._source.contractType.contracttypes.votewitnesscontract + '</br>';
+                  output += " - witnesscreatecontract: " + response.hits.hits[i]._source.contractType.contracttypes.witnesscreatecontract + '</br>';
+
                   if(response.hits.hits[i]._source.transactions){
                      output += "transactions: " + '</br>';
                      for(var j in response.hits.hits[i]._source.transactions){

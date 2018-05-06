@@ -9,8 +9,11 @@ const BlockToElastic = require("./datatransfer/blockToElastic.js");
 
 
 //DBUtils
-var cassandraDBUtils = new CassandraDBUtils("Cassandra DBUtils created");
-var elasticSearchDBUtils = new ElasticSearchDBUtils("ElasticSearch DBUtils created");
+var cassandraSetup = { contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' };
+var cassandraDBUtils = new CassandraDBUtils(cassandraSetup);
+
+var elasticSearchSetup = {host: 'localhost:9200'};
+var elasticSearchDBUtils = new ElasticSearchDBUtils(elasticSearchSetup);
 
 //BlockChainData
 const GRPC_HOSTNAME_PORT = {hostname:"127.0.0.1", port:"50051"};
@@ -31,7 +34,7 @@ function putAllDataIntoDB(){
 }
 
 function putAllDataIntoElastic(){
-	dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+	//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 	dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
 	dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
 	dbToElasticSearch.putAllNodeDataIntoElasticSearch();
@@ -56,8 +59,8 @@ putAllDataIntoElastic();
 // dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
-/*let dataPromise = cassandraDBUtils.getAllAddresses();
+// let dataPromise = cassandraDBUtils.getAllBlocks();
 
-dataPromise.then(function(dataFromLocalNode){
-    console.log(dataFromLocalNode);
-});*/
+// dataPromise.then(function(dataFromLocalNode){
+//     console.log(dataFromLocalNode);
+// });

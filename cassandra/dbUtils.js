@@ -13,8 +13,8 @@ const queryGetAllWitnesses = 'SELECT JSON address, votecount, pubkey, url, total
 const queryInsertNode = 'INSERT INTO nodes (host, port) VALUES (?, ?);'
 const queryGetAllNodes = 'SELECT JSON host, port FROM nodes';
 
-const queryGetAllAssetIssue = 'SELECT JSON ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url FROM assetissues';
-const queryInsertAssetIssue = 'INSERT INTO assetissues (ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+const queryGetAllAssetIssue = 'SELECT JSON ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url FROM assetissues';
+const queryInsertAssetIssue = 'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 const queryGetAllAccounts = 'SELECT JSON accountname, type, address, balance, voteslist, assetmap, latestoprationtime FROM accounts';
 const queryInsertAccount = 'INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime) VALUES (?, ?, ?, ?, ?, ?, ?);';
@@ -24,29 +24,29 @@ class CassandraDBUtils {
 		console.log(construction);
 	}
 
-	async getAllBlocks(){
-		const result = await cassandraClient.execute(queryGetAllBlocksFromDB);
+	async getAll(query){
+		const result = await cassandraClient.execute(query);
 		return result;
+	}
+
+	async getAllBlocks(){
+		return this.getAll(queryGetAllBlocksFromDB);
 	}
 
 	async getAllIssuedAssets(){
-		const result = await cassandraClient.execute(queryGetAllAssetIssue);
-		return result;
+		return this.getAll(queryGetAllAssetIssue);
 	}
 
 	async getAllWitnesses(){
-		const result = await cassandraClient.execute(queryGetAllWitnesses);
-		return result;
+		return this.getAll(queryGetAllWitnesses);
 	}
 
 	async getAllNodes(){
-		const result = await cassandraClient.execute(queryGetAllNodes);
-		return result;
+		return this.getAll(queryGetAllNodes);
   	}
 
   	async getAllAccounts(){
-		const result = await cassandraClient.execute(queryGetAllAccounts);
-		return result;
+		return this.getAll(queryGetAllAccounts);
   	}
 
 	getTransactionsFromBlockNumber(blockNum){
@@ -57,39 +57,33 @@ class CassandraDBUtils {
 		});
 	}
 
+	insert(query, params, message){
+		cassandraClient.execute(query, params, { prepare: true })
+	  		.then(result => console.log(message));
+	}
+
 	insertBlock(params){
 		//const params = [parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions];
-
-		cassandraClient.execute(queryInsertBlock, params, { prepare: true })
-	  		.then(result => console.log('Row updated on the cluster'));
+		this.insert(queryInsertBlock, params, 'Block added to the cluster');
 	}
 
 	insertWitness(params){
 		//const params = [address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs]
-
-		cassandraClient.execute(queryInsertWitness, params, { prepare: true })
-	  		.then(result => console.log('Row updated on the cluster'));
+		this.insert(queryInsertWitness, params, 'Witness added to the cluster');
 	}
 
 	insertNode(params){
-		cassandraClient.execute(queryInsertNode, params, { prepare: true })
-	  		.then(result => console.log('Node added to the cluster'));
+		this.insert(queryInsertNode, params, 'Node added to the cluster');
 	}
 
 	insertAssetIssue(params){
 		//const params = [ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url];
-
-		cassandraClient.execute(queryInsertAssetIssue, params, { prepare: true })
-	  		.then(result => console.log('Node added to the cluster'));
-
+		this.insert(queryInsertAssetIssue, params, 'Node added to the cluster');
 	}
 
 	insertAccount(params){
 		//const params = [ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url];
-
-		cassandraClient.execute(queryInsertAccount, params, { prepare: true })
-	  		.then(result => console.log('Account added to the cluster'));
-
+		this.insert(queryInsertAccount, params, 'Account added to the cluster');
 	}
 
 	batchInsertBlock(params){

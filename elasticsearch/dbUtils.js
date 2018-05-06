@@ -1,9 +1,9 @@
 const elasticsearch = require('elasticsearch');
-const client = new elasticsearch.Client({host: 'localhost:9200'});
+
 
 class ElasticSearchDBUtils {
-	constructor(construction) {
-		console.log(construction);
+	constructor(elasticSearchSetup) {
+		this.client = new elasticsearch.Client(elasticSearchSetup);
 	}
 
 	insertBlocks(jsonData){
@@ -24,7 +24,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: row.number}});
 			bulkRequest.push(bulkData);
 		}
-		_insertBulk(bulkRequest)
+		this._insertBulk(bulkRequest, this.client)
 	}
 
 	insertWitnesses(jsonData){
@@ -46,7 +46,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'witnesses', _type: 'witness', _id: row.address}});
 			bulkRequest.push(bulkData);
 		}
-		_insertBulk(bulkRequest)
+		this._insertBulk(bulkRequest, this.client)
 	}
 
 	insertNodes(jsonData){
@@ -61,7 +61,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'nodes', _type: 'node', _id: row.host}});
 			bulkRequest.push(bulkData);
 		}
-		_insertBulk(bulkRequest)
+		this._insertBulk(bulkRequest, this.client)
 	}
 
 	insertIssuedAssets(jsonData){
@@ -85,7 +85,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'issuedassets', _type: 'issuedasset', _id: row.ownerAddress}});
 			bulkRequest.push(bulkData);
 		}
-		_insertBulk(bulkRequest)
+		this._insertBulk(bulkRequest, this.client)
 	}
 
 	insertAccounts(jsonData){
@@ -105,7 +105,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'accounts', _type: 'account', _id: row.ownerAddress}});
 			bulkRequest.push(bulkData);
 		}
-		_insertBulk(bulkRequest)
+		this._insertBulk(bulkRequest, this.client)
 	}
 
 	insertTotalTransaction(numOfTransactions){
@@ -116,35 +116,35 @@ class ElasticSearchDBUtils {
 		bulkRequest.push({index: {_index: 'transactions', _type: 'transaction', _id: "totalTransaction"}});
 		bulkRequest.push(bulkData);
 
-		_insertBulk(bulkRequest)
+		this._insertBulk(bulkRequest, this.client)
 	}
-}
 
-function _insertBulk(bulkRequest){
-	var insertData = function(){
-		var busy = false;
-		var callback = function(error, response) {
-			if (error) {
-				console.log(error);
+	_insertBulk(bulkRequest, client){
+		var insertData = function(){
+			var busy = false;
+			var callback = function(error, response) {
+				if (error) {
+					console.log(error);
+				}
+				busy = false;
+			};
+
+			if (!busy) {
+				busy = true;
+				client.bulk({
+					body: bulkRequest.slice(0, 1000)
+				}, callback);
+				bulkRequest = bulkRequest.slice(1000);
 			}
-			busy = false;
+
+			if (bulkRequest.length > 0) {
+				setTimeout(insertData, 10);
+			} else {
+				console.log('Inserted all blocks into elasticsearch.');
+			}
 		};
-
-		if (!busy) {
-			busy = true;
-			client.bulk({
-				body: bulkRequest.slice(0, 1000)
-			}, callback);
-			bulkRequest = bulkRequest.slice(1000);
-		}
-
-		if (bulkRequest.length > 0) {
-			setTimeout(insertData, 10);
-		} else {
-			console.log('Inserted all blocks into elasticsearch.');
-		}
-	};
-  insertData();
+		insertData();
+	}
 }
 
 module.exports = ElasticSearchDBUtils;

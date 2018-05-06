@@ -1,7 +1,5 @@
 const cassandra = require('cassandra-driver');
 
-const cassandraClient = new cassandra.Client({ contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' });
-
 const queryGetTransactionsFromBlock = 'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
 
 const queryGetAllBlocksFromDB = 'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions FROM block';
@@ -20,12 +18,12 @@ const queryGetAllAccounts = 'SELECT JSON accountname, type, address, balance, vo
 const queryInsertAccount = 'INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime) VALUES (?, ?, ?, ?, ?, ?, ?);';
 
 class CassandraDBUtils {
-	constructor(construction) {
-		console.log(construction);
+	constructor(cassandraSetup) {
+		this.cassandraClient = new cassandra.Client(cassandraSetup);
 	}
 
 	async getAll(query){
-		const result = await cassandraClient.execute(query);
+		const result = await this.cassandraClient.execute(query);
 		return result;
 	}
 
@@ -50,7 +48,7 @@ class CassandraDBUtils {
   	}
 
 	getTransactionsFromBlockNumber(blockNum){
-		cassandraClient.execute(queryGetTransactionsFromBlock, [ blockNum ], { prepare: true })
+		this.cassandraClient.execute(queryGetTransactionsFromBlock, [ blockNum ], { prepare: true })
 		.then(result => {
 			const row = result.first();
 			console.log(row);
@@ -58,7 +56,7 @@ class CassandraDBUtils {
 	}
 
 	insert(query, params, message){
-		cassandraClient.execute(query, params, { prepare: true })
+		this.cassandraClient.execute(query, params, { prepare: true })
 	  		.then(result => console.log(message));
 	}
 

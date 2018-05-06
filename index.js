@@ -38,7 +38,7 @@ function putAllDataIntoElastic(){
 	dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
 }
 
-//putAllDataIntoDB();
+putAllDataIntoDB();
 putAllDataIntoElastic();
 
 // Put data into DB

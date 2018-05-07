@@ -8,10 +8,20 @@ class BlockToElastic {
 	putTotalTransactionIntoElastic(){
 		let that = this;
 
-	    var totalTransactionPromise = this.blockChainData.getTotalTransaction()
-	    totalTransactionPromise.then(function(dataFromNode){
+	    var promise = this.blockChainData.getTotalTransaction()
+	    promise.then(function(dataFromNode){
 	        let jsonData = JSON.parse(JSON.stringify(dataFromNode));
-			that.elasticDBUtils.insertTotalTransaction(jsonData.num);
+			that.elasticDBUtils.insertTotalTransaction(jsonData);
+	    });
+	}
+
+	putDynamicPropertiesIntoElastic(){
+		let that = this;
+
+	    var promise = this.blockChainData.getDynamicProperties()
+	    promise.then(function(dataFromNode){
+	        let jsonData = JSON.parse(JSON.stringify(dataFromNode));
+			that.elasticDBUtils.insertDynamicProperties(jsonData);
 	    });
 	}
 }

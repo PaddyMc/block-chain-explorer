@@ -12,6 +12,7 @@ class ElasticSearchDBUtils {
 
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
+
 			bulkData = {
 				parentHash: row.parenthash,
 				number: row.number,
@@ -24,7 +25,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: row.number}});
 			bulkRequest.push(bulkData);
 		}
-		this._insertBulk(bulkRequest, this.client)
+		this._insertBulk(bulkRequest, this.client, "blocks")
 	}
 
 	insertWitnesses(jsonData){
@@ -46,7 +47,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'witnesses', _type: 'witness', _id: row.address}});
 			bulkRequest.push(bulkData);
 		}
-		this._insertBulk(bulkRequest, this.client)
+		this._insertBulk(bulkRequest, this.client, "witnesses")
 	}
 
 	insertNodes(jsonData){
@@ -61,7 +62,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'nodes', _type: 'node', _id: row.host}});
 			bulkRequest.push(bulkData);
 		}
-		this._insertBulk(bulkRequest, this.client)
+		this._insertBulk(bulkRequest, this.client, "nodes")
 	}
 
 	insertIssuedAssets(jsonData){
@@ -85,7 +86,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'issuedassets', _type: 'issuedasset', _id: row.ownerAddress}});
 			bulkRequest.push(bulkData);
 		}
-		this._insertBulk(bulkRequest, this.client)
+		this._insertBulk(bulkRequest, this.client, "assets")
 	}
 
 	insertAccounts(jsonData){
@@ -105,7 +106,7 @@ class ElasticSearchDBUtils {
 			bulkRequest.push({index: {_index: 'accounts', _type: 'account', _id: row.ownerAddress}});
 			bulkRequest.push(bulkData);
 		}
-		this._insertBulk(bulkRequest, this.client)
+		this._insertBulk(bulkRequest, this.client, "accounts")
 	}
 
 	insertTotalTransaction(jsonData){
@@ -116,7 +117,7 @@ class ElasticSearchDBUtils {
 		bulkRequest.push({index: {_index: 'transactions', _type: 'transaction', _id: "totalTransaction"}});
 		bulkRequest.push(bulkData);
 
-		this._insertBulk(bulkRequest, this.client)
+		this._insertBulk(bulkRequest, this.client, "total trans")
 	}
 
 	insertDynamicProperties(jsonData){
@@ -127,10 +128,10 @@ class ElasticSearchDBUtils {
 		bulkRequest.push({index: {_index: 'properties', _type: 'dynamicProperty', _id: "lastSolidityBlockNum"}});
 		bulkRequest.push(bulkData);
 
-		this._insertBulk(bulkRequest, this.client)
+		this._insertBulk(bulkRequest, this.client, "dynamic properties")
 	}
 
-	_insertBulk(bulkRequest, client){
+	_insertBulk(bulkRequest, client, type){
 		var insertData = function(){
 			var busy = false;
 			var callback = function(error, response) {
@@ -151,7 +152,7 @@ class ElasticSearchDBUtils {
 			if (bulkRequest.length > 0) {
 				setTimeout(insertData, 10);
 			} else {
-				console.log('Inserted all blocks into elasticsearch.');
+				console.log('Inserted all '+ type +' into elasticsearch.');
 			}
 		};
 		insertData();

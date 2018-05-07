@@ -109,15 +109,26 @@ class ElasticSearchDBUtils {
 		this._insertBulk(bulkRequest, this.client, "accounts")
 	}
 
-	insertTotalTransaction(numOfTransactions){
+	insertTotalTransaction(jsonData){
 		let bulkData = {
-			num: numOfTransactions,
+			num: jsonData.num,
 		};
 		let bulkRequest = [];
 		bulkRequest.push({index: {_index: 'transactions', _type: 'transaction', _id: "totalTransaction"}});
 		bulkRequest.push(bulkData);
 
 		this._insertBulk(bulkRequest, this.client, "total trans")
+	}
+
+	insertDynamicProperties(jsonData){
+		let bulkData = {
+			lastSolidityBlockNum: jsonData.lastSolidityBlockNum,
+		};
+		let bulkRequest = [];
+		bulkRequest.push({index: {_index: 'properties', _type: 'dynamicProperty', _id: "lastSolidityBlockNum"}});
+		bulkRequest.push(bulkData);
+
+		this._insertBulk(bulkRequest, this.client, "dynamic properties")
 	}
 
 	_insertBulk(bulkRequest, client, type){

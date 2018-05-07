@@ -26,7 +26,7 @@ var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 
 
 function putAllDataIntoDB(){
-	blocktoDB.putAllBlockDataIntoDB();      
+	blocktoDB.putAllBlockDataIntoDB();
 	blocktoDB.putAllWitnessesIntoDB();
 	blocktoDB.putAllNodesIntoDB();
 	blocktoDB.putAllAccountsIntoDB();
@@ -34,11 +34,14 @@ function putAllDataIntoDB(){
 }
 
 function putAllDataIntoElastic(){
-	//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+	dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 	dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
 	dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
 	dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 	dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
+
+	blockToElastic.putDynamicPropertiesIntoElastic();
+	blockToElastic.putTotalTransactionIntoElastic();
 }
 
 putAllDataIntoDB();

@@ -1,21 +1,26 @@
 const cassandra = require('cassandra-driver');
 
-const queryGetTransactionsFromBlock = 'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
+const queryGetTransactionsFromBlock = 	'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
 
-const queryGetAllBlocksFromDB = 'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions FROM block';
-const queryInsertBlock = 'INSERT INTO block (parentHash, number, time, contracttype,  witnessAddress, transactionsCount, transactions) VALUES (?, ?, ?, ?, ?, ?, ?);';
+// BLOCKS
+const queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions FROM block';
+const queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype,  witnessAddress, transactionsCount, transactions) VALUES (?, ?, ?, ?, ?, ?, ?);';
 
-const queryInsertWitness = 'INSERT INTO witness (address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
-const queryGetAllWitnesses = 'SELECT JSON address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
+// WITNESSES
+const queryGetAllWitnesses		=		'SELECT JSON address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
+const queryInsertWitness 		=		'INSERT INTO witness (address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
 
-const queryInsertNode = 'INSERT INTO nodes (host, port) VALUES (?, ?);'
-const queryGetAllNodes = 'SELECT JSON host, port FROM nodes';
+// NODES
+const queryGetAllNodes 			=		'SELECT JSON host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org FROM nodes';
+const queryInsertNode 			=		'INSERT INTO nodes (host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
 
-const queryGetAllAssetIssue = 'SELECT JSON ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url FROM assetissues';
-const queryInsertAssetIssue = 'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+// ASSETISSUES
+const queryGetAllAssetIssue 	=		'SELECT JSON ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url FROM assetissues';
+const queryInsertAssetIssue 	=		'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
-const queryGetAllAccounts = 'SELECT JSON accountname, type, address, balance, voteslist, assetmap, latestoprationtime FROM accounts';
-const queryInsertAccount = 'INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime) VALUES (?, ?, ?, ?, ?, ?, ?);';
+// ACCOUNTS
+const queryGetAllAccounts 		=		'SELECT JSON accountname, type, address, balance, voteslist, assetmap, latestoprationtime FROM accounts';
+const queryInsertAccount 		=		'INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime) VALUES (?, ?, ?, ?, ?, ?, ?);';
 
 class CassandraDBUtils {
 	constructor(cassandraSetup) {
@@ -71,6 +76,7 @@ class CassandraDBUtils {
 	}
 
 	insertNode(params){
+		//const params = [host, port, city, org, latitude, longitude, countinentalcode, countryname, country, regioncode, currency, org]
 		this.insert(queryInsertNode, params, 'Node added to the cluster');
 	}
 

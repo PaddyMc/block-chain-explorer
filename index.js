@@ -19,14 +19,17 @@ var elasticSearchDBUtils = new ElasticSearchDBUtils(elasticSearchSetup);
 const GRPC_HOSTNAME_PORT = {hostname:"127.0.0.1", port:"50051"};
 var blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
 
+const geoLocationUrl = "https://ipapi.co/";
+
 //DTO's
-var blocktoDB = new BlockToDB(blockChainData, cassandraDBUtils);
+var blocktoDB = new BlockToDB(blockChainData, cassandraDBUtils, geoLocationUrl);
 var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBUtils);
 var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 
 
 function putAllDataIntoDB(){
-	blocktoDB.putAllBlockDataIntoDB();
+
+	//blocktoDB.putAllBlockDataIntoDB();
 	blocktoDB.putAllWitnessesIntoDB();
 	blocktoDB.putAllNodesIntoDB();
 	blocktoDB.putAllAccountsIntoDB();
@@ -34,7 +37,7 @@ function putAllDataIntoDB(){
 }
 
 function putAllDataIntoElastic(){
-	dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+	//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 	dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
 	dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
 	dbToElasticSearch.putAllNodeDataIntoElasticSearch();
@@ -44,22 +47,11 @@ function putAllDataIntoElastic(){
 	blockToElastic.putTotalTransactionIntoElastic();
 }
 
-putAllDataIntoDB();
+//putAllDataIntoDB();
+//blocktoDB.putAllBlockDataIntoDB();
+
 putAllDataIntoElastic();
-
-// Put data into DB
-// blocktoDB.putAllBlockDataIntoDB();      //   0-100
-// blocktoDB.putAllWitnessesIntoDB();
-// blocktoDB.putAllNodesIntoDB();
-// blocktoDB.putAllAccountsIntoDB();
-// blocktoDB.putAllIssuedAssetsIntoDB();
-
-// Insert into elastic search
-// dbToElasticSearch.putAllBlockDataIntoElasticSearch();
-// dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
-// dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
-// dbToElasticSearch.putAllNodeDataIntoElasticSearch();
-// dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
+//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 // let dataPromise = cassandraDBUtils.getAllBlocks();

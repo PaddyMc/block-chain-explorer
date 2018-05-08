@@ -1,10 +1,12 @@
-
+const https = require('https')
 
 class BlockToDB {
 
-	constructor(BlockChainData , CassandraDBUtils) {
+	constructor(BlockChainData , CassandraDBUtils, GeoLocationUrl) {
 		this.blockChainData = BlockChainData;
 		this.cassandraDBUtils = CassandraDBUtils;
+		this.geoLocationUrl = GeoLocationUrl;
+		this.geoLocationDataType = "/json";
 	}
 
 	// WITNESSES
@@ -24,11 +26,19 @@ class BlockToDB {
 	putAllNodesIntoDB(){
 		let that = this;
 
-	    var allNodesPromise = this.blockChainData.listNodes()
+	    let allNodesPromise = this.blockChainData.listNodes()
 	    allNodesPromise.then(function(dataFromNode){
-			for (var i = 0; i < dataFromNode.nodesList.length; i++) {
-				let params = that._buildParamsForNodeInsertStatment(dataFromNode.nodesList[i].address);
-				that.cassandraDBUtils.insertNode(params);
+			for (let i = 0; i < dataFromNode.nodesList.length; i++) {
+				let tempDataFromNode = dataFromNode;
+				let decodedHost = new Buffer(tempDataFromNode.nodesList[i].address.host, 'base64').toString();
+			    let fullUrl = that.geoLocationUrl+decodedHost+that.geoLocationDataType;
+
+				let nodeInfo = that._getLocationFromIp(fullUrl);
+				nodeInfo.then(function(geoLocationInfo){
+					let params = that._buildParamsForNodeInsertStatment(decodedHost, tempDataFromNode.nodesList[i].address, geoLocationInfo);
+					//console.log(params)
+					that.cassandraDBUtils.insertNode(params);
+				});
 			}
 	    });
 	}
@@ -86,7 +96,7 @@ class BlockToDB {
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
 	    dataPromise.then(function(dataFromLocalNode){
 	    	//dataFromLocalNode.number
-	        for(let i = 0; i<dataFromLocalNode.number; i++){
+	        for(let i = 0; i<10000; i++){
 	            that.putBlockIntoDatabaseFromLocalNodeByNumber(i);
 	        }
 	    });
@@ -116,10 +126,15 @@ class BlockToDB {
 	    return params;
 	}
 
-	_buildParamsForNodeInsertStatment(dataFromNode){
-		let decodedHost = new Buffer(dataFromNode.host, 'base64').toString();
-	    let params = [decodedHost, dataFromNode.port.toString()];
-	    return params;
+	_buildParamsForNodeInsertStatment(decodedHost, dataFromNode, geoLocationInfo){
+		let params = [];
+		if(Object.keys(geoLocationInfo).length > 3){
+			params = [decodedHost, dataFromNode.port.toString(), geoLocationInfo.city, geoLocationInfo.region, geoLocationInfo.latitude, geoLocationInfo.longitude, geoLocationInfo.continent_code, geoLocationInfo.country_name, geoLocationInfo.country, geoLocationInfo.region_code, geoLocationInfo.currency, geoLocationInfo.org];
+		} else {
+			params = [decodedHost, dataFromNode.port.toString(), "", "", 0, 0, "", "", "", "", "", ""];
+		}
+
+		return params;
 	}
 
 	_buildParamsForIssuedAssetsInsertStatment(dataFromNode){
@@ -145,6 +160,20 @@ class BlockToDB {
 
 		let params = [dataFromNode.accountName, dataFromNode.type, dataFromNode.address, dataFromNode.balance, votesList, assetMap, dataFromNode.latestOprationTime];
 		return params;
+	}
+
+	async _getLocationFromIp(urlForIpConversion){
+		return new Promise((resolve, reject) => {
+			https.get(urlForIpConversion, (response) => {
+				response.setEncoding('utf8');
+				response.on('data', (body) => {
+					resolve(JSON.parse(body));
+				});
+				response.on('error', (err) => {
+					reject("error")
+				});
+			});
+		});
 	}
 }
 

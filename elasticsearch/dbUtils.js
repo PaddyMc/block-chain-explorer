@@ -9,10 +9,8 @@ class ElasticSearchDBUtils {
 	insertBlocks(jsonData){
 		let bulkData;
 		let bulkRequest = [];
-
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
-
 			bulkData = {
 				parentHash: row.parenthash,
 				number: row.number,
@@ -31,7 +29,6 @@ class ElasticSearchDBUtils {
 	insertWitnesses(jsonData){
 		let bulkData;
 		let bulkRequest = [];
-
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 			bulkData = {
@@ -55,9 +52,19 @@ class ElasticSearchDBUtils {
 		let bulkRequest = [];
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
-			bulkData = {
+		    bulkData = {
 				host: row.host,
-				port: row.port
+				port: row.port,
+				city: row.city,
+				region: row.region,
+				latitude: row.latitude,
+				longitude: row.longitude,
+				continentcode: row.continentcode,
+				countryname: row.countryname,
+				country: row.country,
+				regioncode: row.regioncode,
+				currency: row.currency,
+				org: row.org
 			};
 			bulkRequest.push({index: {_index: 'nodes', _type: 'node', _id: row.host}});
 			bulkRequest.push(bulkData);

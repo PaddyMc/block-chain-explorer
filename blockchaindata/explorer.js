@@ -38,7 +38,7 @@ class BlockChainData {
 
 	async getAccount() {
 		let newAccount = new Account();
-    	newAccount.setAccountName("hope");
+    	newAccount.setAccountName("");
 		let account = await this.GRPCClient.getAccount(newAccount);
 		return account.toObject();
 	}
@@ -98,12 +98,13 @@ class BlockChainData {
   	_returnParsedBlockData(nativeBlock){
   		let transactions = [];
 
+  		let recentBlock = base64DecodeFromString(JSON.stringify(nativeBlock));
+  		
     	for (let transaction of nativeBlock.getTransactionsList()) {
       		transactions = transactions.concat(deserializeTransaction(transaction));
     	}
 
   		let tronJsonBlock =  {
-		      //size: recentBlock.length,
 		      parentHash: byteArray2hexStr(nativeBlock.getBlockHeader().getRawData().getParenthash()),
 		      number: nativeBlock.getBlockHeader().getRawData().getNumber(),
 		      witnessAddress: getBase58CheckAddress(Array.from(nativeBlock.getBlockHeader().getRawData().getWitnessAddress())),
@@ -111,6 +112,7 @@ class BlockChainData {
 		      transactionsCount: nativeBlock.getTransactionsList().length,
 		      contractType: Transaction.Contract.ContractType,
 		      transactions,
+		      size: recentBlock.length,
     	};
 
     	return tronJsonBlock;

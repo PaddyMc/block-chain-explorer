@@ -3,8 +3,8 @@ const cassandra = require('cassandra-driver');
 const queryGetTransactionsFromBlock = 	'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
 
 // BLOCKS
-const queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions FROM block';
-const queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype,  witnessAddress, transactionsCount, transactions) VALUES (?, ?, ?, ?, ?, ?, ?);';
+const queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block';
+const queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype,  witnessAddress, transactionsCount, transactions, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
 
 // WITNESSES
 const queryGetAllWitnesses		=		'SELECT JSON address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
@@ -66,7 +66,7 @@ class CassandraDBUtils {
 	}
 
 	insertBlock(params){
-		//const params = [parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions];
+		//const params = [parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size];
 		this.insert(queryInsertBlock, params, 'Block added to the cluster');
 	}
 

@@ -18,7 +18,8 @@ class ElasticSearchDBUtils {
 				witnessAddress: row.witnessaddress,
 				transactions: row.transactions,
 				contractType: row.contracttype,
-				transactionsCount: row.transactionscount
+				transactionsCount: row.transactionscount,
+				size: row.size
 			};
 			bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: row.number}});
 			bulkRequest.push(bulkData);

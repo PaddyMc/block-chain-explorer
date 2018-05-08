@@ -28,7 +28,6 @@ var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 
 
 function putAllDataIntoDB(){
-
 	//blocktoDB.putAllBlockDataIntoDB();
 	blocktoDB.putAllWitnessesIntoDB();
 	blocktoDB.putAllNodesIntoDB();
@@ -50,12 +49,12 @@ function putAllDataIntoElastic(){
 //putAllDataIntoDB();
 //blocktoDB.putAllBlockDataIntoDB();
 
-putAllDataIntoElastic();
+//putAllDataIntoElastic();
 //dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
-// let dataPromise = cassandraDBUtils.getAllBlocks();
+let dataPromise = blockChainData.getLatestBlockFromLocalNode();
 
-// dataPromise.then(function(dataFromLocalNode){
-//     console.log(dataFromLocalNode);
-// });
+dataPromise.then(function(dataFromLocalNode){
+    console.log(dataFromLocalNode);
+});

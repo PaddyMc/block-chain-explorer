@@ -96,7 +96,7 @@ class BlockToDB {
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
 	    dataPromise.then(function(dataFromLocalNode){
 	    	//dataFromLocalNode.number
-	        for(let i = 0; i<10000; i++){
+	        for(let i = 0; i<dataFromLocalNode.number; i++){
 	            that.putBlockIntoDatabaseFromLocalNodeByNumber(i);
 	        }
 	    });
@@ -117,7 +117,7 @@ class BlockToDB {
 	    let contractTypeToLower = JSON.stringify(contracttypes).toLowerCase();
 	    let contractTypesParsed = JSON.parse(contractTypeToLower);
 
-	    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, contractTypesParsed, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions];
+	    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, contractTypesParsed, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions, dataFromLocalNode.size];
 	    return params;
 	}
 

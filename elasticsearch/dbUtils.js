@@ -57,8 +57,10 @@ class ElasticSearchDBUtils {
 				port: row.port,
 				city: row.city,
 				region: row.region,
-				latitude: row.latitude,
-				longitude: row.longitude,
+				location: {
+					lat: row.latitude,
+					lon: row.longitude
+				},
 				continentcode: row.continentcode,
 				countryname: row.countryname,
 				country: row.country,

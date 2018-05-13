@@ -110,36 +110,35 @@ class BlockToDB {
 
 		for(let i = 0; i<number; i+=3){
 			setTimeout(function(){
-				var a = i;
-				console.log(i);
-				if(i >= number-1){
+				var blockToInsert = i;
+				if(i >= number-2){
 	        		console.log("Last Block Added To Cluster: "+ number);
 	        	}
 
 				var params = []
 
-				let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(i);
+				let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(blockToInsert);
 	    		dataPromiseByNumber.then(function(dataFromLocalNode){
 			        let params1 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 			        params.push(params1);
-			        a++;
+			        blockToInsert++;
 
-			        let dataPromiseByNumber2 = that.blockChainData.getBlockFromLocalNode(a);
+			        let dataPromiseByNumber2 = that.blockChainData.getBlockFromLocalNode(blockToInsert);
 					dataPromiseByNumber2.then(function(dataFromLocalNode){
 				        let params2 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 				        params.push(params2);
-				        a++;
+				        blockToInsert++;
 
-				        let dataPromiseByNumber3 = that.blockChainData.getBlockFromLocalNode(a);
+				        let dataPromiseByNumber3 = that.blockChainData.getBlockFromLocalNode(blockToInsert);
 						dataPromiseByNumber3.then(function(dataFromLocalNode){
 					        let params3 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 					        params.push(params3);
 					        that.cassandraDBUtils.batchInsertBlock(params);
 				    	}).catch(function (err){
-							console.log("Error adding block:" + a);
+							console.log("Error adding block:" + blockToInsert);
 						});
 		    		}).catch(function (err){
-						console.log("Error adding block:" + a);
+						console.log("Error adding block:" + blockToInsert);
 					});
 	    		}).catch(function (err){
 					console.log("Error adding block:" + i);

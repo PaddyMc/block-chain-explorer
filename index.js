@@ -43,6 +43,11 @@ function putAllDataIntoElastic(){
 	blockToElastic.putTotalTransactionIntoElastic();
 }
 
+// ToDo
+//	Return More Than 5000 Records dbToElastic.js // 
+//	Get last 100 Blocks // 30 seconds
+//	From last 100 blocks update accounts
+
 setInterval(function(){
 	putAllDataIntoDB();
 }, 600000);
@@ -61,8 +66,8 @@ setInterval(function(){
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
-	//let dataPromise = blocktoDB.putBlockIntoDatabaseFromLocalNodeByNumber(129);
-	// dataPromise.then(function(dataFromLocalNode){
-	//     console.log(dataFromLocalNode);
-	// });
+//let dataPromise = blocktoDB.putBlockIntoDatabaseFromLocalNodeByNumber(129);
+// dataPromise.then(function(dataFromLocalNode){
+//     console.log(dataFromLocalNode);
+// });
 

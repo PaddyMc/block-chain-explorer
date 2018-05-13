@@ -93,8 +93,6 @@ class CassandraDBUtils {
 	}
 
 	batchInsertBlock(params){
-		//iterate through data to build queries
-
 		const queries = [
 		  {
 		    query: queryInsertBlock,

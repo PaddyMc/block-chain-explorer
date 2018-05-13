@@ -3,8 +3,8 @@ const cassandra = require('cassandra-driver');
 const queryGetTransactionsFromBlock = 	'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
 
 // BLOCKS
-const queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block';
-const queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype,  witnessAddress, transactionsCount, transactions, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
+var queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block';
+var queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
 
 // WITNESSES
 const queryGetAllWitnesses		=		'SELECT JSON address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
@@ -21,6 +21,7 @@ const queryInsertAssetIssue 	=		'INSERT INTO assetissues (ownerAddress, name, to
 // ACCOUNTS
 const queryGetAllAccounts 		=		'SELECT JSON accountname, type, address, balance, voteslist, assetmap, latestoprationtime FROM accounts';
 const queryInsertAccount 		=		'INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime) VALUES (?, ?, ?, ?, ?, ?, ?);';
+
 
 class CassandraDBUtils {
 	constructor(cassandraSetup) {
@@ -54,58 +55,63 @@ class CassandraDBUtils {
 
 	getTransactionsFromBlockNumber(blockNum){
 		this.cassandraClient.execute(queryGetTransactionsFromBlock, [ blockNum ], { prepare: true })
-		.then(result => {
-			const row = result.first();
-			console.log(row);
-		});
+			.then(result => {
+				const row = result.first();
+			});
 	}
 
 	insert(query, params, message){
 		this.cassandraClient.execute(query, params, { prepare: true })
-	  		.then(result => console.log(message));
+			.catch(error => {
+				console.log("Error adding "+ message + " to DB");
+			});
 	}
 
-	insertBlock(params){
-		//const params = [parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size];
-		this.insert(queryInsertBlock, params, 'Block added to the cluster');
+	insertBlock(params, number){
+		this.insert(queryInsertBlock, params, 'Block');
 	}
+
 
 	insertWitness(params){
 		//const params = [address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs]
-		this.insert(queryInsertWitness, params, 'Witness added to the cluster');
+		this.insert(queryInsertWitness, params, 'Witness');
 	}
 
 	insertNode(params){
 		//const params = [host, port, city, org, latitude, longitude, countinentalcode, countryname, country, regioncode, currency, org]
-		this.insert(queryInsertNode, params, 'Node added to the cluster');
+		this.insert(queryInsertNode, params, 'Node');
 	}
 
 	insertAssetIssue(params){
 		//const params = [ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url];
-		this.insert(queryInsertAssetIssue, params, 'Node added to the cluster');
+		this.insert(queryInsertAssetIssue, params, 'Issued Asset');
 	}
 
 	insertAccount(params){
 		//const params = [ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url];
-		this.insert(queryInsertAccount, params, 'Account added to the cluster');
+		this.insert(queryInsertAccount, params, 'Account');
 	}
 
 	batchInsertBlock(params){
 		//iterate through data to build queries
 
-/*		const queries = [
+		const queries = [
 		  {
-		    query: 'UPDATE user_profiles SET email=? WHERE key=?',
-		    params: [ emailAddress, 'hendrix' ]
+		    query: queryInsertBlock,
+		    params: params[0]
 		  },
 		  {
-		    query: 'INSERT INTO user_track (key, text, date) VALUES (?, ?, ?)',
-		    params: [ 'hendrix', 'Changed email', new Date() ]
+		    query: queryInsertBlock,
+		    params: params[1]
+		  },
+		  {
+		    query: queryInsertBlock,
+		    params: params[2]
 		  }
-		];*/
+		];
 
-		client.batch(queries, { prepare: true })
-  			.then(result => console.log('Data updated on cluster'));
+		this.cassandraClient.batch(queries, { prepare: true })
+  			.catch(error => console.log('Error adding blocks to cluster'));
 	}
 }
 

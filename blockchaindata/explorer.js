@@ -70,7 +70,7 @@ class BlockChainData {
 
 	async createAccount(accountData){
 		let newAccount = new Account();
-    	newAccount.setAccountName("hope");
+    	newAccount.setAccountName("");
 		let account = await this.GRPCClient.createAccount(newAccount);
 	}
 
@@ -105,15 +105,15 @@ class BlockChainData {
     	}
 
   		let tronJsonBlock =  {
-		      parentHash: byteArray2hexStr(nativeBlock.getBlockHeader().getRawData().getParenthash()),
-		      number: nativeBlock.getBlockHeader().getRawData().getNumber(),
-		      witnessAddress: getBase58CheckAddress(Array.from(nativeBlock.getBlockHeader().getRawData().getWitnessAddress())),
-		      time: nativeBlock.getBlockHeader().getRawData().getTimestamp(),
-		      transactionsCount: nativeBlock.getTransactionsList().length,
-		      contractType: Transaction.Contract.ContractType,
-		      transactions,
-		      size: recentBlock.length,
-    	};
+		       parentHash: byteArray2hexStr(nativeBlock.getBlockHeader().getRawData().getParenthash()),
+		       number: nativeBlock.getBlockHeader().getRawData().getNumber(),
+		       witnessAddress: getBase58CheckAddress(Array.from(nativeBlock.getBlockHeader().getRawData().getWitnessAddress())),
+		       time: nativeBlock.getBlockHeader().getRawData().getTimestamp(),
+		       transactionsCount: nativeBlock.getTransactionsList().length,
+		       contractType: Transaction.Contract.ContractType,
+		       transactions,
+		       size: recentBlock.length,
+     	};
 
     	return tronJsonBlock;
   	}

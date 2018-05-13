@@ -9,26 +9,25 @@ const BlockToElastic = require("./datatransfer/blockToElastic.js");
 
 
 //DBUtils
-var cassandraSetup = { contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' };
-var cassandraDBUtils = new CassandraDBUtils(cassandraSetup);
+const cassandraSetup = { contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' };
+const cassandraDBUtils = new CassandraDBUtils(cassandraSetup);
 
-var elasticSearchSetup = {host: 'localhost:9200'};
-var elasticSearchDBUtils = new ElasticSearchDBUtils(elasticSearchSetup);
+const elasticSearchSetup = {host: 'localhost:9200'};
+const elasticSearchDBUtils = new ElasticSearchDBUtils(elasticSearchSetup);
 
 //BlockChainData
 const GRPC_HOSTNAME_PORT = {hostname:"127.0.0.1", port:"50051"};
-var blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
+const blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
 
 const geoLocationUrl = "https://ipapi.co/";
 
 //DTO's
-var blocktoDB = new BlockToDB(blockChainData, cassandraDBUtils, geoLocationUrl);
-var dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBUtils);
-var blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
+const blocktoDB = new BlockToDB(blockChainData, cassandraDBUtils, geoLocationUrl);
+const dbToElasticSearch = new DBToElasticSearch(cassandraDBUtils, elasticSearchDBUtils);
+const blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 
 
 function putAllDataIntoDB(){
-	//blocktoDB.putAllBlockDataIntoDB();
 	blocktoDB.putAllWitnessesIntoDB();
 	blocktoDB.putAllNodesIntoDB();
 	blocktoDB.putAllAccountsIntoDB();
@@ -36,25 +35,34 @@ function putAllDataIntoDB(){
 }
 
 function putAllDataIntoElastic(){
-	//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 	dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
 	dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
 	dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 	dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
-
 	blockToElastic.putDynamicPropertiesIntoElastic();
 	blockToElastic.putTotalTransactionIntoElastic();
 }
 
-//putAllDataIntoDB();
-//blocktoDB.putAllBlockDataIntoDB();
+setInterval(function(){
+	putAllDataIntoDB();
+}, 600000);
 
-//putAllDataIntoElastic();
-//dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+setInterval(function(){
+	blocktoDB.putAllBlockDataIntoDB();
+}, 800000);
+
+setInterval(function(){
+	putAllDataIntoElastic();
+}, 1000000);
+
+setInterval(function(){
+	dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+}, 1200000);
 
 // add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
-let dataPromise = blockChainData.getLatestBlockFromLocalNode();
 
-dataPromise.then(function(dataFromLocalNode){
-    console.log(dataFromLocalNode);
-});
+	//let dataPromise = blocktoDB.putBlockIntoDatabaseFromLocalNodeByNumber(129);
+	// dataPromise.then(function(dataFromLocalNode){
+	//     console.log(dataFromLocalNode);
+	// });
+

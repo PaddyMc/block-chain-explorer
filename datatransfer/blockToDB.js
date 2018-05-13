@@ -16,10 +16,15 @@ class BlockToDB {
 	    var allWitnessPromise = this.blockChainData.listWitnesses()
 	    allWitnessPromise.then(function(dataFromNode){
 	        for (var i = 0; i < dataFromNode.witnessesList.length; i++) {
+	        	if(i === dataFromNode.witnessesList.length - 1){
+	        		console.log("Last Witness Added To Cluster: "+dataFromNode.witnessesList.length);
+	        	}
 	            let params = that._buildParamsForWitnessInsertStatment(dataFromNode.witnessesList[i]);
 	            that.cassandraDBUtils.insertWitness(params)
 	        }
-	    });
+	    }).catch(function (err){
+			console.log("Error adding witnesses to DB");
+		});
 	}
 
 	// NODES
@@ -33,14 +38,21 @@ class BlockToDB {
 				let decodedHost = new Buffer(tempDataFromNode.nodesList[i].address.host, 'base64').toString();
 			    let fullUrl = that.geoLocationUrl+decodedHost+that.geoLocationDataType;
 
-				let nodeInfo = that._getLocationFromIp(fullUrl);
+		    	let nodeInfo = that._getLocationFromIp(fullUrl);
 				nodeInfo.then(function(geoLocationInfo){
+					if(i === tempDataFromNode.nodesList.length - 1){
+		        		console.log("Last Node Added To Cluster: "+tempDataFromNode.nodesList.length);
+		        	}
 					let params = that._buildParamsForNodeInsertStatment(decodedHost, tempDataFromNode.nodesList[i].address, geoLocationInfo);
-					//console.log(params)
+					that.cassandraDBUtils.insertNode(params);
+				}).catch(function(error){
+					let params = [decodedHost, tempDataFromNode.nodesList[i].address.port.toString(), "err", "err", 0, 0, "err", "err", "err", "err", "err", "err"];
 					that.cassandraDBUtils.insertNode(params);
 				});
 			}
-	    });
+	    }).catch(function (err){
+			console.log("Error adding nodes to DB");
+		});
 	}
 
 	// ISSUEDASSETS
@@ -50,10 +62,15 @@ class BlockToDB {
 		var allIssuedAssetsPromise = this.blockChainData.getAssetIssueList();
 		allIssuedAssetsPromise.then(function(dataFromNode){
 			for (var i = 0; i < dataFromNode.assetissueList.length; i++) {
+				if(i === dataFromNode.assetissueList.length - 1){
+	        		console.log("Last AssetIssue Added To Cluster: "+dataFromNode.assetissueList.length);
+	        	}
 				let params = that._buildParamsForIssuedAssetsInsertStatment(dataFromNode.assetissueList[i]);
 				that.cassandraDBUtils.insertAssetIssue(params);
 			}
-	    });
+	    }).catch(function (err){
+			console.log("Error adding issued assets to DB");
+		});
 	}
 
 	// ACCOUNTS
@@ -63,10 +80,15 @@ class BlockToDB {
 	    let allAccountsPromise = this.blockChainData.listAccounts()
 	    allAccountsPromise.then(function(dataFromNode){
 	        for(let i = 0;i<dataFromNode.accountsList.length;i++){
+	        	if(i === dataFromNode.accountsList.length - 1){
+	        		console.log("Last Account Added To Cluster: "+ dataFromNode.accountsList.length);
+	        	}
 	        	let params = that._buildParamsForAccountInsertStatment(dataFromNode.accountsList[i]);
 	        	that.cassandraDBUtils.insertAccount(params);
 	        }
-	    });
+	    }).catch(function (err){
+			console.log("Error adding accounts to DB");
+		});
 	}
 
 	// BLOCKS
@@ -77,34 +99,71 @@ class BlockToDB {
 	    dataPromise.then(function(dataFromLocalNode){
 	        const params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 	        that.cassandraDBUtils.insertBlock(params);
-	    });
+	    }).catch(function (err){
+			console.log("Error adding latest block to DB");
+		});
 	}
 
 	putBlockIntoDatabaseFromLocalNodeByNumber(number){
 		var that = this;
+		console.log("Syncing "+ number + " Blocks");
 
-	    var dataPromiseByNumber = this.blockChainData.getBlockFromLocalNode(number);
-	    dataPromiseByNumber.then(function(dataFromLocalNode){
-	        const params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
-	        that.cassandraDBUtils.insertBlock(params);
-	    });
+		for(let i = 0; i<number; i+=3){
+			setTimeout(function(){
+				var a = i;
+				console.log(i);
+				if(i >= number-1){
+	        		console.log("Last Block Added To Cluster: "+ number);
+	        	}
+
+				var params = []
+
+				let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(i);
+	    		dataPromiseByNumber.then(function(dataFromLocalNode){
+			        let params1 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
+			        params.push(params1);
+			        a++;
+
+			        let dataPromiseByNumber2 = that.blockChainData.getBlockFromLocalNode(a);
+					dataPromiseByNumber2.then(function(dataFromLocalNode){
+				        let params2 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
+				        params.push(params2);
+				        a++;
+
+				        let dataPromiseByNumber3 = that.blockChainData.getBlockFromLocalNode(a);
+						dataPromiseByNumber3.then(function(dataFromLocalNode){
+					        let params3 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
+					        params.push(params3);
+					        that.cassandraDBUtils.batchInsertBlock(params);
+				    	}).catch(function (err){
+							console.log("Error adding block:" + a);
+						});
+		    		}).catch(function (err){
+						console.log("Error adding block:" + a);
+					});
+	    		}).catch(function (err){
+					console.log("Error adding block:" + i);
+				});
+
+	    	}, i*10);
+		}
+		
 	}
 
 	putAllBlockDataIntoDB(){
 		var that = this;
-
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
+
 	    dataPromise.then(function(dataFromLocalNode){
-	    	//dataFromLocalNode.number
-	        for(let i = 0; i<dataFromLocalNode.number; i++){
-	            that.putBlockIntoDatabaseFromLocalNodeByNumber(i);
-	        }
-	    });
+	      	that.putBlockIntoDatabaseFromLocalNodeByNumber(dataFromLocalNode.number);
+	    }).catch(function (err){
+			console.log("Error adding initial block to DB");
+		});
 	}
 
 	_buildParamsForBlockInsertStatment(dataFromLocalNode){
 	    let transactions = {};
-	    let contracttypes = {};
+	    let contractType = {};
 
 	    for (let i = 0; i < dataFromLocalNode.transactions.length; i++) {
 	        let replaceFrom = JSON.stringify(dataFromLocalNode.transactions[i]).replace(/from/, 'fromaddress');
@@ -112,12 +171,13 @@ class BlockToDB {
 	        let newArray = JSON.parse(replaceTo);
 	        transactions[i] = newArray;
 	    }
-	    contracttypes["contracttypes"] = dataFromLocalNode.contractType;
 
-	    let contractTypeToLower = JSON.stringify(contracttypes).toLowerCase();
-	    let contractTypesParsed = JSON.parse(contractTypeToLower);
+	    let contractTypeToLower = JSON.stringify(dataFromLocalNode.contractType).toLowerCase();
+	    let contractTypesParsed= JSON.parse(contractTypeToLower);
 
-	    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, contractTypesParsed, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions, dataFromLocalNode.size];
+	    contractType['types'] = contractTypesParsed;
+
+	    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, contractType, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions, dataFromLocalNode.size];
 	    return params;
 	}
 
@@ -164,14 +224,19 @@ class BlockToDB {
 
 	async _getLocationFromIp(urlForIpConversion){
 		return new Promise((resolve, reject) => {
-			https.get(urlForIpConversion, (response) => {
+			let request = https.get(urlForIpConversion, (response) => {
 				response.setEncoding('utf8');
 				response.on('data', (body) => {
-					resolve(JSON.parse(body));
+					if(body.includes("Request throttled")){
+						reject("Node Location Query Limit Reached");
+						console.log("Node Location Query Limit Reached");
+					} else {
+						resolve(JSON.parse(body));
+					}
 				});
-				response.on('error', (err) => {
-					reject("error")
-				});
+			});
+			request.on('error', (err) =>{
+				reject(err);
 			});
 		});
 	}

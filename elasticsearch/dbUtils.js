@@ -34,13 +34,14 @@ class ElasticSearchDBUtils {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 			bulkData = {
 				address: row.address,
-				votecount: row.votecount,
-				pubkey: row.pubkey,
+				voteCount: row.votecount,
+				pubKey: row.pubkey,
 				url: row.url,
-				totalmissed: row.totalmissed,
-				latestblocknum: row.latestblocknum,
-				latestslotnum: row.latestslotnum,
-				isjobs: row.isjobs
+				totalProduced: row.totalproduced,
+				totalMissed: row.totalmissed,
+				latestBlockNum: row.latestblocknum,
+				latestsLotNum: row.latestslotnum,
+				isJobs: row.isjobs
 			};
 			bulkRequest.push({index: {_index: 'witnesses', _type: 'witness', _id: row.address}});
 			bulkRequest.push(bulkData);
@@ -93,7 +94,7 @@ class ElasticSearchDBUtils {
 				description: row.description,
 				url: row.url,
 			};
-			bulkRequest.push({index: {_index: 'issuedassets', _type: 'issuedasset', _id: row.ownerAddress}});
+			bulkRequest.push({index: {_index: 'issuedassets', _type: 'issuedasset', _id: row.owneraddress}});
 			bulkRequest.push(bulkData);
 		}
 		this._insertBulk(bulkRequest, this.client, "assets")
@@ -105,15 +106,21 @@ class ElasticSearchDBUtils {
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 			bulkData = {
-				accountname: row.accountname,
+				accountName: row.accountname,
 				type: row.type,
 				address: row.address,
 				balance: row.balance,
-				voteslist: row.voteslist,
-				assetmap: row.assetmap,
-				latestoprationtime: row.latestoprationtime,
+				votesList: row.voteslist,
+				assetMap: row.assetmap,
+				latestOprationTime: row.latestoprationtime,
+				frozenList: row.frozenlist,
+				bandwidth: row.bandwidth,
+				createTime: row.createtime,
+				allowance: row.allowance,
+				latestWithdrawTime: row.latestwithdrawtime,
+				code: row.code,
 			};
-			bulkRequest.push({index: {_index: 'accounts', _type: 'account', _id: row.ownerAddress}});
+			bulkRequest.push({index: {_index: 'accounts', _type: 'account', _id: row.address}});
 			bulkRequest.push(bulkData);
 		}
 		this._insertBulk(bulkRequest, this.client, "accounts")

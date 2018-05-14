@@ -89,8 +89,8 @@ class BlockToDB {
 	        	let params = that._buildParamsForAccountInsertStatment(dataFromNode.accountsList[i]);
 	        	that.cassandraDBUtils.insertAccount(params);
 	        }
-	    // }).catch(function (err){
-		// 	console.log("Error adding accounts to DB");
+	    }).catch(function (err){
+			console.log("Error adding accounts to DB");
 		});
 	}
 
@@ -214,10 +214,8 @@ class BlockToDB {
 	}
 
 	_buildParamsForWitnessInsertStatment(dataFromNode){
-		console.log(dataFromNode.address);
-		console.log("====================");
-		console.log(getBase58CheckAddress(base64DecodeFromString(dataFromNode.address)));
-	    let params = [dataFromNode.address, dataFromNode.votecount, dataFromNode.pubkey, dataFromNode.url, dataFromNode.totalmissed, dataFromNode.latestblocknum, dataFromNode.latestslotnum, dataFromNode.isjobs];
+		let decodedAddress = getBase58CheckAddress(base64DecodeFromString(dataFromNode.address));
+	    let params = [decodedAddress, dataFromNode.votecount, dataFromNode.pubkey, dataFromNode.url, dataFromNode.totalproduced, dataFromNode.totalmissed, dataFromNode.latestblocknum, dataFromNode.latestslotnum, dataFromNode.isjobs];
 	    return params;
 	}
 

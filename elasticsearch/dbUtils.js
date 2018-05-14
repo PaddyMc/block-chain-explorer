@@ -93,7 +93,7 @@ class ElasticSearchDBUtils {
 				description: row.description,
 				url: row.url,
 			};
-			bulkRequest.push({index: {_index: 'issuedassets', _type: 'issuedasset', _id: row.ownerAddress}});
+			bulkRequest.push({index: {_index: 'issuedassets', _type: 'issuedasset', _id: row.owneraddress}});
 			bulkRequest.push(bulkData);
 		}
 		this._insertBulk(bulkRequest, this.client, "assets")
@@ -119,7 +119,7 @@ class ElasticSearchDBUtils {
 				latestWithdrawTime: row.latestwithdrawtime,
 				code: row.code,
 			};
-			bulkRequest.push({index: {_index: 'accounts', _type: 'account', _id: row.ownerAddress}});
+			bulkRequest.push({index: {_index: 'accounts', _type: 'account', _id: row.address}});
 			bulkRequest.push(bulkData);
 		}
 		this._insertBulk(bulkRequest, this.client, "accounts")

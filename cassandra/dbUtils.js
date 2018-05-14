@@ -7,8 +7,8 @@ const queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contrac
 const queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
 
 // WITNESSES
-const queryGetAllWitnesses		=		'SELECT JSON address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
-const queryInsertWitness 		=		'INSERT INTO witness (address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
+const queryGetAllWitnesses		=		'SELECT JSON address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
+const queryInsertWitness 		=		'INSERT INTO witness (address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
 
 // NODES
 const queryGetAllNodes 			=		'SELECT JSON host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org FROM nodes';

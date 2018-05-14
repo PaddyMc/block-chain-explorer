@@ -117,16 +117,6 @@ class BlockChainData {
 
     	return tronJsonBlock;
   	}
-	
-  	_returnParsedWitnessData(nativeBlock){
-  		// ToDo
-
-  		let tronJsonBlock =  {
-
-     	};
-
-    	return tronJsonBlock;
-  	}
 
   	_returnParsedIssuedAssetData(nativeBlock){
   		// ToDo

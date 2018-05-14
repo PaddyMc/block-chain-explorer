@@ -1,4 +1,7 @@
 const https = require('https')
+const {base64DecodeFromString, byteArray2hexStr, bytesToString} = require("@tronprotocol/wallet-api/src/utils/bytes");
+const {getBase58CheckAddress, signTransaction, passwordToAddress} = require("@tronprotocol/wallet-api/src/utils/crypto");
+
 
 class BlockToDB {
 
@@ -146,7 +149,37 @@ class BlockToDB {
 
 	    	}, i*10);
 		}
-		
+
+	}
+
+	putBlockIntoDatabaseFromLocalNodeByNumber2(number){
+		var that = this;
+		console.log("Syncing "+ number + " Blocks");
+
+        var paramBatch = [];
+		var batchIntervalCount = 0;
+		for(let i = 0; i<number; i++){
+			if(i == number-1){
+				console.log("Last Block Added To Cluster: "+ number);
+			}
+
+			let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(i);
+			dataPromiseByNumber.then(function(dataFromLocalNode){
+				let params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
+				paramBatch.push(params);
+			}).catch(function (err){
+				console.log("Error adding block:" + i);
+			});
+
+			if(i%3 == 0 || i == number-1) {
+				batchIntervalCount++;
+				setTimeout(function(){
+					that.cassandraDBUtils.batchInsertBlock(paramBatch);
+					paramBatch = [];
+		    	}, batchIntervalCount*10);
+			}
+		}
+
 	}
 
 	putAllBlockDataIntoDB(){
@@ -216,8 +249,8 @@ class BlockToDB {
 	    for (let i = 0; i < dataFromNode.assetMap.length; i++) {
 	        assetMap[dataFromNode.assetMap[i][0]] = dataFromNode.assetMap[i][1];
 	    }
-
-		let params = [dataFromNode.accountName, dataFromNode.type, dataFromNode.address, dataFromNode.balance, votesList, assetMap, dataFromNode.latestOprationTime];
+		let decodedAddress = getBase58CheckAddress(base64DecodeFromString(dataFromNode.address));
+		let params = [dataFromNode.accountName, dataFromNode.type, decodedAddress, dataFromNode.balance, votesList, assetMap, dataFromNode.latestOprationTime];
 		return params;
 	}
 

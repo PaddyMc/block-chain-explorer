@@ -89,8 +89,8 @@ class BlockToDB {
 	        	let params = that._buildParamsForAccountInsertStatment(dataFromNode.accountsList[i]);
 	        	that.cassandraDBUtils.insertAccount(params);
 	        }
-	    }).catch(function (err){
-			console.log("Error adding accounts to DB");
+	    // }).catch(function (err){
+		// 	console.log("Error adding accounts to DB");
 		});
 	}
 
@@ -214,6 +214,9 @@ class BlockToDB {
 	}
 
 	_buildParamsForWitnessInsertStatment(dataFromNode){
+		console.log(dataFromNode.address);
+		console.log("====================");
+		console.log(getBase58CheckAddress(base64DecodeFromString(dataFromNode.address)));
 	    let params = [dataFromNode.address, dataFromNode.votecount, dataFromNode.pubkey, dataFromNode.url, dataFromNode.totalmissed, dataFromNode.latestblocknum, dataFromNode.latestslotnum, dataFromNode.isjobs];
 	    return params;
 	}
@@ -241,16 +244,26 @@ class BlockToDB {
 	_buildParamsForAccountInsertStatment(dataFromNode){
 		let votesList = {};
 		let assetMap = {};
+		let frozenList = {};
+		// frozenList["frozenBalance"] = 0;
+		// frozenList["expireTime"] = 0;
 
 		for (let i = 0; i < dataFromNode.votesList.length; i++) {
 	        votesList[i] = dataFromNode.votesList[i];
 	    }
-
 	    for (let i = 0; i < dataFromNode.assetMap.length; i++) {
 	        assetMap[dataFromNode.assetMap[i][0]] = dataFromNode.assetMap[i][1];
 	    }
+
+		for (let i = 0; i < dataFromNode.frozenList.length; i++) {
+			let frozenAccount = {};
+			frozenAccount["frozenBalance"] = dataFromNode.frozenList[i]["frozenBalance"];
+			frozenAccount["expireTime"] = dataFromNode.frozenList[i]["expireTime"];
+			frozenList[i] = frozenAccount;
+		}
 		let decodedAddress = getBase58CheckAddress(base64DecodeFromString(dataFromNode.address));
-		let params = [dataFromNode.accountName, dataFromNode.type, decodedAddress, dataFromNode.balance, votesList, assetMap, dataFromNode.latestOprationTime];
+
+		let params = [dataFromNode.accountName, dataFromNode.type, decodedAddress, dataFromNode.balance, votesList, assetMap, dataFromNode.latestOprationTime, frozenList, dataFromNode.bandwidth, dataFromNode.createTime, dataFromNode.allowance, dataFromNode.latestWithdrawTime, dataFromNode.code];
 		return params;
 	}
 

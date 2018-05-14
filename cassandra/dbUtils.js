@@ -3,8 +3,8 @@ const cassandra = require('cassandra-driver');
 const queryGetTransactionsFromBlock = 	'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
 
 // BLOCKS
-var queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block';
-var queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
+const queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block';
+const queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
 
 // WITNESSES
 const queryGetAllWitnesses		=		'SELECT JSON address, votecount, pubkey, url, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness';
@@ -19,9 +19,8 @@ const queryGetAllAssetIssue 	=		'SELECT JSON ownerAddress, name, totalsupply, tr
 const queryInsertAssetIssue 	=		'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 // ACCOUNTS
-const queryGetAllAccounts 		=		'SELECT JSON accountname, type, address, balance, voteslist, assetmap, latestoprationtime FROM accounts';
-const queryInsertAccount 		=		'INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime) VALUES (?, ?, ?, ?, ?, ?, ?);';
-
+const queryGetAllAccounts 		=		'SELECT JSON accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts';
+const queryInsertAccount 		=		'INSERT INTO accounts (accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 class CassandraDBUtils {
 	constructor(cassandraSetup) {
@@ -64,6 +63,7 @@ class CassandraDBUtils {
 		this.cassandraClient.execute(query, params, { prepare: true })
 			.catch(error => {
 				console.log("Error adding "+ message + " to DB");
+				console.log(params);
 			});
 	}
 
@@ -88,7 +88,8 @@ class CassandraDBUtils {
 	}
 
 	insertAccount(params){
-		//const params = [ownerAddress, name, totalSupply, trxNum, num, startTime, endTime, decayRatio, voteScore, description, url];
+	// accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code
+		// const params2 = ['', 0, '27cR9nG28vFbES1wqmCLGymYxCmawqFHXck', 402789000000, {}, {}, 1525874976000, ['0': {expireTime: 0, dasnsjdf: 2}], 0, 1525867938000, 0, 0, ''];
 		this.insert(queryInsertAccount, params, 'Account');
 	}
 

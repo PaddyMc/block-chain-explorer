@@ -99,7 +99,7 @@ class BlockChainData {
   		let transactions = [];
 
   		let recentBlock = base64DecodeFromString(JSON.stringify(nativeBlock));
-  		
+
     	for (let transaction of nativeBlock.getTransactionsList()) {
       		transactions = transactions.concat(deserializeTransaction(transaction));
     	}
@@ -117,22 +117,12 @@ class BlockChainData {
 
     	return tronJsonBlock;
   	}
-
-  	_returnParsedAddressData(nativeBlock){
-  		// ToDo
-
-  		let tronJsonBlock =  {
-		      
-     	};
-
-    	return tronJsonBlock;
-  	}
-
+	
   	_returnParsedWitnessData(nativeBlock){
   		// ToDo
 
   		let tronJsonBlock =  {
-		      
+
      	};
 
     	return tronJsonBlock;
@@ -140,9 +130,9 @@ class BlockChainData {
 
   	_returnParsedIssuedAssetData(nativeBlock){
   		// ToDo
-  		
+
   		let tronJsonBlock =  {
-		      
+
      	};
 
     	return tronJsonBlock;

@@ -235,7 +235,8 @@ class BlockToDB {
 		dataFromNode.description = new Buffer(dataFromNode.description, 'base64').toString();
 		dataFromNode.url = new Buffer(dataFromNode.url, 'base64').toString();
 
-		let params = [dataFromNode.ownerAddress, dataFromNode.name, dataFromNode.totalSupply, dataFromNode.trxNum, dataFromNode.num, dataFromNode.startTime, dataFromNode.endTime, dataFromNode.decayRatio, dataFromNode.voteScore, dataFromNode.description, dataFromNode.url]
+		let decodedAddress = getBase58CheckAddress(base64DecodeFromString(dataFromNode.ownerAddress));
+		let params = [decodedAddress, dataFromNode.name, dataFromNode.totalSupply, dataFromNode.trxNum, dataFromNode.num, dataFromNode.startTime, dataFromNode.endTime, dataFromNode.decayRatio, dataFromNode.voteScore, dataFromNode.description, dataFromNode.url]
 		return params;
 	}
 

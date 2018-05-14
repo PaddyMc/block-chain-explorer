@@ -34,13 +34,14 @@ class ElasticSearchDBUtils {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 			bulkData = {
 				address: row.address,
-				votecount: row.votecount,
-				pubkey: row.pubkey,
+				voteCount: row.votecount,
+				pubKey: row.pubkey,
 				url: row.url,
-				totalmissed: row.totalmissed,
-				latestblocknum: row.latestblocknum,
-				latestslotnum: row.latestslotnum,
-				isjobs: row.isjobs
+				totalProduced: row.totalproduced,
+				totalMissed: row.totalmissed,
+				latestBlockNum: row.latestblocknum,
+				latestsLotNum: row.latestslotnum,
+				isJobs: row.isjobs
 			};
 			bulkRequest.push({index: {_index: 'witnesses', _type: 'witness', _id: row.address}});
 			bulkRequest.push(bulkData);

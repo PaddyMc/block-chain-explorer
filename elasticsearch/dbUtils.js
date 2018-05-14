@@ -105,13 +105,19 @@ class ElasticSearchDBUtils {
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 			bulkData = {
-				accountname: row.accountname,
+				accountName: row.accountname,
 				type: row.type,
 				address: row.address,
 				balance: row.balance,
-				voteslist: row.voteslist,
-				assetmap: row.assetmap,
-				latestoprationtime: row.latestoprationtime,
+				votesList: row.voteslist,
+				assetMap: row.assetmap,
+				latestOprationTime: row.latestoprationtime,
+				frozenList: row.frozenlist,
+				bandwidth: row.bandwidth,
+				createTime: row.createtime,
+				allowance: row.allowance,
+				latestWithdrawTime: row.latestwithdrawtime,
+				code: row.code,
 			};
 			bulkRequest.push({index: {_index: 'accounts', _type: 'account', _id: row.ownerAddress}});
 			bulkRequest.push(bulkData);

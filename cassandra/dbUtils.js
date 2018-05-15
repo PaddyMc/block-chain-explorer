@@ -5,8 +5,9 @@ const QUERY_LIMIT = 5000;
 const queryGetTransactionsFromBlock = 	'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
 
 // BLOCKS
-const queryGetAllBlocksFromDB 	=		'SELECT JSON parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block LIMIT ' + QUERY_LIMIT;
-const queryInsertBlock			=		'INSERT INTO block (parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?);';
+const queryGetFirstBlocksPartition =		'SELECT JSON uuid, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block LIMIT ' + QUERY_LIMIT;
+const queryGetBlocksPartition 	 =		'SELECT JSON uuid, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
+const queryInsertBlock			=		'INSERT INTO block (uuid, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?);';
 
 // WITNESSES
 const queryGetAllWitnesses		=		'SELECT JSON address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness LIMIT ' + QUERY_LIMIT;
@@ -21,7 +22,7 @@ const queryGetAllAssetIssue 	=		'SELECT JSON ownerAddress, name, totalsupply, tr
 const queryInsertAssetIssue 	=		'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 // ACCOUNTS
-const queryGetAllAccounts 	=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
+const queryGetAllAccounts 	=			'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
 const queryGetFirstAccountsPartition 		=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
 const queryGetAccountsPartition 		=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
 const queryInsertAccount 		=		'INSERT INTO accounts (uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
@@ -38,7 +39,36 @@ class CassandraDBUtils {
 	}
 
 	async getAllBlocks(){
-		return this.getAll(queryGetAllBlocksFromDB);
+		let that = this;
+		var dataPromise = that.getAll(queryGetFirstBlocksPartition);
+		dataPromise.then(function(dataFromLocalNode){
+			if(dataFromLocalNode["rows"][0]){
+				that.elasticSearchDBUtils.insertBlocks(dataFromLocalNode);
+			}
+			if(dataFromLocalNode["rows"][QUERY_LIMIT-1]){
+				var row = JSON.parse(dataFromLocalNode["rows"][QUERY_LIMIT-1]['[json]']);
+				let latestUuid = row.uuid;
+				that._getBlocksPartition(latestUuid)
+			} else {
+				console.log("All blocks are read");
+			}
+		});
+	}
+
+	_getBlocksPartition(latestUuid){
+		let that = this;
+		let dataPromise = this.cassandraClient.execute(queryGetBlocksPartition, [latestUuid], { prepare: true });
+		dataPromise.then(async function(dataFromLocalNode){
+			if(dataFromLocalNode["rows"][QUERY_LIMIT-1]){
+				let row = JSON.parse(dataFromLocalNode["rows"][QUERY_LIMIT-1]['[json]']);
+				let latestUuid = row.uuid;
+				that.elasticSearchDBUtils.insertBlocks(dataFromLocalNode);
+				that._getBlocksPartition(latestUuid)
+			} else if(dataFromLocalNode["rows"][0]){
+				that.elasticSearchDBUtils.insertBlocks(dataFromLocalNode);
+				console.log("All blocks are read");
+			}
+		});
 	}
 
 	async getAllIssuedAssets(){

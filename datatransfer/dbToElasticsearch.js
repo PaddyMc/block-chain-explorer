@@ -6,14 +6,7 @@ class DBToElasticSearch {
 	}
 
 	putAllBlockDataIntoElasticSearch(){
-		let that = this;
-
-	    var dataPromise = this.cassandraDBUtils.getAllBlocks();
-	    dataPromise.then(function(jsonData){
-	        that.elasticSearchDBUtils.insertBlocks(jsonData);
-	    }).catch(function (err){
-			console.log("Error pulling blocks from DB and putting into Elastic");
-		});
+		this.cassandraDBUtils.getAllBlocks();
 	}
 
 	putAllWitnessDataIntoElasticSearch(){

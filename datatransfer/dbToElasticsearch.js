@@ -50,14 +50,7 @@ class DBToElasticSearch {
 	}
 
 	putAllAccountsDataIntoElasticSearch(){
-		let that = this;
-
-		var dataPromise = this.cassandraDBUtils.getAllAccounts();
-		dataPromise.then(function(jsonData){
-	        that.elasticSearchDBUtils.insertAccounts(jsonData);
-	    }).catch(function (err){
-			console.log("Error pulling accounts from DB and putting into Elastic");
-		});
+		this.cassandraDBUtils.getAllAccounts();
 	}
 }
 

@@ -128,6 +128,8 @@ class ElasticSearchDBUtils {
 		this._insertBulk(bulkRequest, this.client, "accounts")
 	}
 
+
+// uuid, blocknum, transactionnum, fromaddress, toaddress, amount
 	insertTransactions(jsonData){
 		let bulkData;
 		let bulkRequest = [];
@@ -139,7 +141,8 @@ class ElasticSearchDBUtils {
 				toAddress: row.toaddress,
 				amount: row.amount,
 			};
-			bulkRequest.push({index: {_index: 'transactions', _type: 'transaction', _id: row.address}});
+			let id = row.blocknum.toString() + row.transactionnum.toString();
+			bulkRequest.push({index: {_index: 'transactions', _type: 'transaction', _id: id}});
 			bulkRequest.push(bulkData);
 		}
 		this._insertBulk(bulkRequest, this.client, "transactions")

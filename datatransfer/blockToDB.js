@@ -179,34 +179,44 @@ class BlockToDB {
 		return transactions;
 	}
 
-	putBlockIntoDatabaseFromLocalNodeByNumber2(number){
+	putAllBlockDataIntoDatabase(number){
 		var that = this;
 		console.log("Syncing "+ number + " Blocks");
 
         var paramBatch = [];
+        var transactionBatch =[];
 		var batchIntervalCount = 0;
-		for(let i = 0; i<number; i++){
-			if(i == number-1){
-				console.log("Last Block Added To Cluster: "+ number);
-			}
+		for(let i = 0; i<=number; i++){
+			setTimeout(function(){
+				if(i == number){
+					console.log("Last Block Added To Cluster: "+ number);
+				}
 
-			let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(i);
-			dataPromiseByNumber.then(function(dataFromLocalNode){
-				let params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
-				paramBatch.push(params);
-			}).catch(function (err){
-				console.log("Error adding block:" + i);
-			});
+				let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(i);
+				dataPromiseByNumber.then(function(dataFromLocalNode){
+					let params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 
-			if(i%3 == 0 || i == number-1) {
-				batchIntervalCount++;
-				setTimeout(function(){
-					that.cassandraDBUtils.batchInsertBlock(paramBatch);
-					paramBatch = [];
-		    	}, batchIntervalCount*10);
-			}
+					if(dataFromLocalNode.transactions.length>=1){
+			        	let transactionsOnBlock = that._addBlockNumberToTransactions(dataFromLocalNode.transactions, i);
+		        		transactionBatch.push(transactionsOnBlock);
+	        		}
+
+					paramBatch.push(params);
+
+					if(i%5 == 0 || i == number) {
+						batchIntervalCount++;
+						that.cassandraDBUtils.batchInsertTransactions(transactionBatch);
+						that.cassandraDBUtils.batchInsertBlock(paramBatch);
+						paramBatch = [];
+						transactionBatch =[];
+				    }
+
+				}).catch(function (err){
+					console.log("Error adding block:" + i);
+				});
+
+			}, batchIntervalCount*10);
 		}
-
 	}
 
 	putAllBlockDataIntoDB(){
@@ -214,7 +224,7 @@ class BlockToDB {
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
 
 	    dataPromise.then(function(dataFromLocalNode){
-	      	that.putBlockIntoDatabaseFromLocalNodeByNumber(dataFromLocalNode.number);
+	      	that.putAllBlockDataIntoDatabase(dataFromLocalNode.number);
 	    }).catch(function (err){
 			console.log("Error adding initial block to DB");
 		});

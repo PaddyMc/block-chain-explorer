@@ -12,14 +12,16 @@ class ElasticSearchDBUtils {
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 			bulkData = {
-				parentHash: row.parenthash,
+				hash: row.hash,
+ 				parentHash: row.parenthash,
 				number: row.number,
 				time: row.time,
 				witnessAddress: row.witnessaddress,
 				transactions: row.transactions,
 				contractType: row.contracttype,
 				transactionsCount: row.transactionscount,
-				size: row.size
+				size: row.size,
+				transactionsTotal: row.transactionstotal
 			};
 			bulkRequest.push({index: {_index: 'blocks', _type: 'block', _id: row.number}});
 			bulkRequest.push(bulkData);
@@ -124,6 +126,23 @@ class ElasticSearchDBUtils {
 			bulkRequest.push(bulkData);
 		}
 		this._insertBulk(bulkRequest, this.client, "accounts")
+	}
+
+	insertTransactions(jsonData){
+		let bulkData;
+		let bulkRequest = [];
+		for(var i in jsonData["rows"]) {
+			var row = JSON.parse(jsonData["rows"][i]['[json]']);
+			bulkData = {
+				blockNum: row.blocknum,
+				fromAddress: row.fromaddress,
+				toAddress: row.toaddress,
+				amount: row.amount,
+			};
+			bulkRequest.push({index: {_index: 'transactions', _type: 'transaction', _id: row.address}});
+			bulkRequest.push(bulkData);
+		}
+		this._insertBulk(bulkRequest, this.client, "transactions")
 	}
 
 	insertTotalTransaction(jsonData){

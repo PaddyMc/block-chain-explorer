@@ -42,6 +42,17 @@ class DBToElasticSearch {
 		});
 	}
 
+	putAllTransactionsIntoElasticSearch(){
+		let that = this;
+
+	    var dataPromise = this.cassandraDBUtils.getAllTransactions();
+	    dataPromise.then(function(jsonData){
+	        that.elasticSearchDBUtils.insertTransactions(jsonData);
+	    }).catch(function (err){
+			console.log("Error pulling Transactions from DB and putting into Elastic");
+		});
+	}
+
 	putAllAccountsDataIntoElasticSearch(){
 		this.cassandraDBUtils.getAllAccounts();
 	}

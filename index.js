@@ -9,11 +9,11 @@ const BlockToElastic = require("./datatransfer/blockToElastic.js");
 
 
 //DBUtils
-const cassandraSetup = { contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' };
-const cassandraDBUtils = new CassandraDBUtils(cassandraSetup);
-
 const elasticSearchSetup = {host: 'localhost:9200'};
 const elasticSearchDBUtils = new ElasticSearchDBUtils(elasticSearchSetup);
+
+const cassandraSetup = { contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' };
+const cassandraDBUtils = new CassandraDBUtils(cassandraSetup, elasticSearchDBUtils);
 
 //BlockChainData
 const GRPC_HOSTNAME_PORT = {hostname:"127.0.0.1", port:"50051"};
@@ -39,35 +39,36 @@ function putAllDataIntoElastic(){
 	dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
 	dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 	dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
+
+	dbToElasticsearch.putAllTransactionsDataIntoElastic();
+
 	blockToElastic.putDynamicPropertiesIntoElastic();
 	blockToElastic.putTotalTransactionIntoElastic();
 }
 
-// ToDo
-//	Return More Than 5000 Records dbToElastic.js // 
+//  ToDo
 //	Get last 100 Blocks // 30 seconds
 //	From last 100 blocks update accounts
 
-setInterval(function(){
-	putAllDataIntoDB();
-}, 600000);
+// setInterval(function(){
+// 	putAllDataIntoDB();
+// }, 600000);
 
-setInterval(function(){
-	blocktoDB.putAllBlockDataIntoDB();
-}, 800000);
+// setInterval(function(){
+// 	blocktoDB.putAllBlockDataIntoDB();
+// }, 800000);
 
-setInterval(function(){
-	putAllDataIntoElastic();
-}, 1000000);
+// setInterval(function(){
+// 	putAllDataIntoElastic();
+// }, 1000000);
 
-setInterval(function(){
-	dbToElasticSearch.putAllBlockDataIntoElasticSearch();
-}, 1200000);
+// setInterval(function(){
+// 	dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+// }, 1200000);
 
-// add get tronix price => https://api.coinmarketcap.com/v1/ticker/tronix/
 
-//let dataPromise = blocktoDB.putBlockIntoDatabaseFromLocalNodeByNumber(129);
+// let dataPromise = blockChainData.listAccounts();
 // dataPromise.then(function(dataFromLocalNode){
-//     console.log(dataFromLocalNode);
+//     console.log(dataFromLocalNode.toObject());
 // });
 

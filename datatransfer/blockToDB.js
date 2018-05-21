@@ -89,9 +89,9 @@ class BlockToDB {
 	        	let params = that._buildParamsForAccountInsertStatment(dataFromNode.accountsList[i]);
 	        	that.cassandraDBUtils.insertAccount(params);
 	        }
-	    }).catch(function (err){
+	    })/*.catch(function (err){
 			console.log("Error adding accounts to DB");
-		});
+		});*/
 	}
 
 	// BLOCKS
@@ -119,23 +119,43 @@ class BlockToDB {
 	        	}
 
 				var params = []
+				var transactions = []
 
 				let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(blockToInsert);
 	    		dataPromiseByNumber.then(function(dataFromLocalNode){
 			        let params1 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 			        params.push(params1);
+			        
+			        if(dataFromLocalNode.transactions.length>=1){
+			        	let transactionsOnBlock = that._addBlockNumberToTransactions(dataFromLocalNode.transactions, blockToInsert);
+			        	transactions.push(transactionsOnBlock);
+			        }
+			        
 			        blockToInsert++;
 
 			        let dataPromiseByNumber2 = that.blockChainData.getBlockFromLocalNode(blockToInsert);
 					dataPromiseByNumber2.then(function(dataFromLocalNode){
 				        let params2 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 				        params.push(params2);
+				        
+				        if(dataFromLocalNode.transactions.length>=1){
+					        let transactionsOnBlock = that._addBlockNumberToTransactions(dataFromLocalNode.transactions, blockToInsert);
+				        	transactions.push(transactionsOnBlock);
+			        	}
+
 				        blockToInsert++;
 
 				        let dataPromiseByNumber3 = that.blockChainData.getBlockFromLocalNode(blockToInsert);
 						dataPromiseByNumber3.then(function(dataFromLocalNode){
 					        let params3 = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 					        params.push(params3);
+
+					        if(dataFromLocalNode.transactions.length>=1){
+					        	let transactionsOnBlock = that._addBlockNumberToTransactions(dataFromLocalNode.transactions, blockToInsert);
+				        		transactions.push(transactionsOnBlock);
+			        		}
+
+			        		that.cassandraDBUtils.batchInsertTransactions(transactions);
 					        that.cassandraDBUtils.batchInsertBlock(params);
 				    	}).catch(function (err){
 							console.log("Error adding block:" + blockToInsert);
@@ -149,37 +169,54 @@ class BlockToDB {
 
 	    	}, i*10);
 		}
-
 	}
 
-	putBlockIntoDatabaseFromLocalNodeByNumber2(number){
+	_addBlockNumberToTransactions(transactions, number){
+		for(let i=0;i<transactions.length;i++){
+			transactions[i].blockNum = number;
+			transactions[i].transactionNum = i;
+		}
+		return transactions;
+	}
+
+	putAllBlockDataIntoDatabase(number){
 		var that = this;
 		console.log("Syncing "+ number + " Blocks");
 
         var paramBatch = [];
+        var transactionBatch =[];
 		var batchIntervalCount = 0;
-		for(let i = 0; i<number; i++){
-			if(i == number-1){
-				console.log("Last Block Added To Cluster: "+ number);
-			}
+		for(let i = 0; i<=number; i++){
+			setTimeout(function(){
+				if(i == number){
+					console.log("Last Block Added To Cluster: "+ number);
+				}
 
-			let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(i);
-			dataPromiseByNumber.then(function(dataFromLocalNode){
-				let params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
-				paramBatch.push(params);
-			}).catch(function (err){
-				console.log("Error adding block:" + i);
-			});
+				let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(i);
+				dataPromiseByNumber.then(function(dataFromLocalNode){
+					let params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
 
-			if(i%3 == 0 || i == number-1) {
-				batchIntervalCount++;
-				setTimeout(function(){
-					that.cassandraDBUtils.batchInsertBlock(paramBatch);
-					paramBatch = [];
-		    	}, batchIntervalCount*10);
-			}
+					if(dataFromLocalNode.transactions.length>=1){
+			        	let transactionsOnBlock = that._addBlockNumberToTransactions(dataFromLocalNode.transactions, i);
+		        		transactionBatch.push(transactionsOnBlock);
+	        		}
+
+					paramBatch.push(params);
+
+					if(i%5 == 0 || i == number) {
+						batchIntervalCount++;
+						that.cassandraDBUtils.batchInsertTransactions(transactionBatch);
+						that.cassandraDBUtils.batchInsertBlock(paramBatch);
+						paramBatch = [];
+						transactionBatch =[];
+				    }
+
+				}).catch(function (err){
+					console.log("Error adding block:" + i);
+				});
+
+			}, batchIntervalCount*10);
 		}
-
 	}
 
 	putAllBlockDataIntoDB(){
@@ -187,7 +224,7 @@ class BlockToDB {
 	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
 
 	    dataPromise.then(function(dataFromLocalNode){
-	      	that.putBlockIntoDatabaseFromLocalNodeByNumber(dataFromLocalNode.number);
+	      	that.putAllBlockDataIntoDatabase(dataFromLocalNode.number);
 	    }).catch(function (err){
 			console.log("Error adding initial block to DB");
 		});
@@ -196,12 +233,14 @@ class BlockToDB {
 	_buildParamsForBlockInsertStatment(dataFromLocalNode){
 	    let transactions = {};
 	    let contractType = {};
+	    let totalAmountTransactionsPerBlock = 0;
 
 	    for (let i = 0; i < dataFromLocalNode.transactions.length; i++) {
 	        let replaceFrom = JSON.stringify(dataFromLocalNode.transactions[i]).replace(/from/, 'fromaddress');
 	        let replaceTo = replaceFrom.replace(/to/, 'toaddress');
 	        let newArray = JSON.parse(replaceTo);
 	        transactions[i] = newArray;
+	        totalAmountTransactionsPerBlock += transactions[i].amount;
 	    }
 
 	    let contractTypeToLower = JSON.stringify(dataFromLocalNode.contractType).toLowerCase();
@@ -209,7 +248,7 @@ class BlockToDB {
 
 	    contractType['types'] = contractTypesParsed;
 
-	    let params = [dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, contractType, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions, dataFromLocalNode.size];
+	    let params = [dataFromLocalNode.hash, dataFromLocalNode.parentHash, dataFromLocalNode.number, dataFromLocalNode.time, contractType, dataFromLocalNode.witnessAddress, dataFromLocalNode.transactionsCount, transactions, dataFromLocalNode.size, totalAmountTransactionsPerBlock];
 	    return params;
 	}
 
@@ -244,8 +283,6 @@ class BlockToDB {
 		let votesList = {};
 		let assetMap = {};
 		let frozenList = {};
-		// frozenList["frozenBalance"] = 0;
-		// frozenList["expireTime"] = 0;
 
 		for (let i = 0; i < dataFromNode.votesList.length; i++) {
 	        votesList[i] = dataFromNode.votesList[i];

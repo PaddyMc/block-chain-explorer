@@ -105,6 +105,7 @@ class BlockChainData {
     	}
 
   		let tronJsonBlock =  {
+  			hash: byteArray2hexStr(nativeBlock.getBlockHeader().getRawData().getTxtrieroot()),
 			parentHash: byteArray2hexStr(nativeBlock.getBlockHeader().getRawData().getParenthash()),
 			number: nativeBlock.getBlockHeader().getRawData().getNumber(),
 			witnessAddress: getBase58CheckAddress(Array.from(nativeBlock.getBlockHeader().getRawData().getWitnessAddress())),

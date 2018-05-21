@@ -2,30 +2,34 @@ const cassandra = require('cassandra-driver');
 
 const QUERY_LIMIT = 5000;
 
-const queryGetTransactionsFromBlock = 	'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
+const queryGetTransactionsFromBlock 	= 		'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
 
 // BLOCKS
-const queryGetFirstBlocksPartition =		'SELECT JSON uuid, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block LIMIT ' + QUERY_LIMIT;
-const queryGetBlocksPartition 	 =		'SELECT JSON uuid, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size FROM block WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
-const queryInsertBlock			=		'INSERT INTO block (uuid, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?);';
+const queryGetFirstBlocksPartition 		=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block LIMIT ' + QUERY_LIMIT;
+const queryGetBlocksPartition 	 		=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
+const queryInsertBlock					=		'INSERT INTO block (uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 // WITNESSES
-const queryGetAllWitnesses		=		'SELECT JSON address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness LIMIT ' + QUERY_LIMIT;
-const queryInsertWitness 		=		'INSERT INTO witness (address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
+const queryGetAllWitnesses				=		'SELECT JSON address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness LIMIT ' + QUERY_LIMIT;
+const queryInsertWitness 				=		'INSERT INTO witness (address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
 
 // NODES
-const queryGetAllNodes 			=		'SELECT JSON host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org FROM nodes LIMIT ' + QUERY_LIMIT;
-const queryInsertNode 			=		'INSERT INTO nodes (host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
+const queryGetAllNodes 					=		'SELECT JSON host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org FROM nodes LIMIT ' + QUERY_LIMIT;
+const queryInsertNode 					=		'INSERT INTO nodes (host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
 
 // ASSETISSUES
-const queryGetAllAssetIssue 	=		'SELECT JSON ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url FROM assetissues LIMIT ' + QUERY_LIMIT;
-const queryInsertAssetIssue 	=		'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+const queryGetAllAssetIssue 			=		'SELECT JSON ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url FROM assetissues LIMIT ' + QUERY_LIMIT;
+const queryInsertAssetIssue 			=		'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 // ACCOUNTS
-const queryGetAllAccounts 	=			'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
-const queryGetFirstAccountsPartition 		=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
+const queryGetAllAccounts 				=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
+const queryGetFirstAccountsPartition 	=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
 const queryGetAccountsPartition 		=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
-const queryInsertAccount 		=		'INSERT INTO accounts (uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+const queryInsertAccount 				=		'INSERT INTO accounts (uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+
+// TRANSACTIONS
+const queryGetAllTransactions 			= 		'SELECT JSON uuid, blocknum, transactionnum, fromaddress, toaddress, amount FROM transactions LIMIT ' + QUERY_LIMIT;
+const queryInsertTransaction 			=		'INSERT INTO transactions (uuid, blocknum, transactionnum, fromaddress, toaddress, amount) VALUES (uuid(), ?, ?, ?, ?, ?);';
 
 class CassandraDBUtils {
 	constructor(cassandraSetup, elasticSearchDBUtils) {
@@ -83,6 +87,10 @@ class CassandraDBUtils {
 		return this.getAll(queryGetAllNodes);
   	}
 
+  	async getAllTransactions(){
+		return this.getAll(queryGetAllTransactions);
+  	}
+
   	async getAllAccounts(){
 		let that = this;
 		var dataPromise = that.getAll(queryGetFirstAccountsPartition);
@@ -108,7 +116,7 @@ class CassandraDBUtils {
 				let row = JSON.parse(dataFromLocalNode["rows"][QUERY_LIMIT-1]['[json]']);
 				let latestUuid = row.uuid;
 				that.elasticSearchDBUtils.insertAccounts(dataFromLocalNode);
-				that._getAccountsPartition(latestUuid)
+				that._getAccountsPartition(latestUuid);
 			} else if(dataFromLocalNode["rows"][0]){
 				that.elasticSearchDBUtils.insertAccounts(dataFromLocalNode);
 				console.log("All accounts are read");
@@ -151,29 +159,46 @@ class CassandraDBUtils {
 	}
 
 	insertAccount(params){
-	// accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code
-		// const params2 = ['', 0, '27cR9nG28vFbES1wqmCLGymYxCmawqFHXck', 402789000000, {}, {}, 1525874976000, ['0': {expireTime: 0, dasnsjdf: 2}], 0, 1525867938000, 0, 0, ''];
+		// const params2 = [accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code];
 		this.insert(queryInsertAccount, params, 'Account');
 	}
 
+	insertTransaction(params){
+		//const params = [number, toaddress, fromaddress, amount]
+		this.insert(queryInsertTransaction, params, 'Transaction');
+	}
+
 	batchInsertBlock(params){
-		const queries = [
-		  {
-		    query: queryInsertBlock,
-		    params: params[0]
-		  },
-		  {
-		    query: queryInsertBlock,
-		    params: params[1]
-		  },
-		  {
-		    query: queryInsertBlock,
-		    params: params[2]
-		  }
-		];
+		const queries = []
+
+		for(let i=0; i<params.length; i++){
+			let singleQuery = {
+			    query: queryInsertBlock,
+			    params: params[i]
+		  	}
+		  	queries.push(singleQuery);
+		}
 
 		this.cassandraClient.batch(queries, { prepare: true })
   			.catch(error => console.log('Error adding blocks to cluster'));
+	}
+
+	batchInsertTransactions(params){
+		const queries = [];
+		if(params.length>=1){
+			for(let i=0; i<params[0].length; i++){
+				let singleTransaction = {
+				    query: queryInsertTransaction,
+				    params: [params[0][i].blockNum, params[0][i].transactionNum, params[0][i].from, params[0][i].to, params[0][i].amount]
+			  	}
+			  	queries.push(singleTransaction);
+			}
+		}
+
+		if(queries.length>=1){
+			this.cassandraClient.batch(queries, { prepare: true })
+  				.catch(error => console.log('Error adding transactions to cluster'));
+		}
 	}
 }
 

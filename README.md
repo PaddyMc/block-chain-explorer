@@ -39,4 +39,6 @@
 
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id
 
+docker run -p 50051:50051 -it 10f1b4b22b34 /bin/bash -c 'cd build/libs; java -jar java-tron.jar'
+
 

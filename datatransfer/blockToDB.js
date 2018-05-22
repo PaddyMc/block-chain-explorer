@@ -166,6 +166,57 @@ class BlockToDB {
 		});
 	}
 
+	putLatestBlockDataIntoDatabase(latestAmount, number){
+		var that = this;
+		console.log("Syncing latest "+ latestAmount + " Blocks");
+
+		var paramBatch = [];
+		var transactionBatch =[];
+		var batchIntervalCount = 0;
+		for(let i = (number - latestAmount + 1); i<=number; i++){
+			setTimeout(function(){
+				if(i == number){
+					console.log("Last Block Added To Cluster: "+ number);
+				}
+
+				let dataPromiseByNumber = that.blockChainData.getBlockFromLocalNode(i);
+				dataPromiseByNumber.then(function(dataFromLocalNode){
+					let params = that._buildParamsForBlockInsertStatment(dataFromLocalNode);
+
+					if(dataFromLocalNode.transactions.length>=1){
+						let transactionsOnBlock = that._addBlockNumberToTransactions(dataFromLocalNode.transactions, i);
+						transactionBatch.push(transactionsOnBlock);
+					}
+
+					paramBatch.push(params);
+
+					if(i%5 == 0 || i == number) {
+						batchIntervalCount++;
+						that.cassandraDBUtils.batchInsertTransactions(transactionBatch);
+						that.cassandraDBUtils.batchInsertBlock(paramBatch);
+						paramBatch = [];
+						transactionBatch =[];
+					}
+
+				}).catch(function (err){
+					console.log("Error adding block:" + i);
+				});
+
+			}, batchIntervalCount*10);
+		}
+	}
+
+	putLatestBlockDataIntoDB(latestAmount){
+		var that = this;
+	    var dataPromise = this.blockChainData.getLatestBlockFromLocalNode();
+
+	    dataPromise.then(function(dataFromLocalNode){
+	      	that.putLatestBlockDataIntoDatabase(latestAmount, dataFromLocalNode.number);
+	    }).catch(function (err){
+			console.log("Error adding latest blocks to DB");
+		});
+	}
+
 	_buildParamsForBlockInsertStatment(dataFromLocalNode){
 	    let transactions = {};
 	    let contractType = {};

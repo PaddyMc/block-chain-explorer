@@ -41,4 +41,4 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' con
 
 docker run -p 50051:50051 -it 10f1b4b22b34 /bin/bash -c 'cd build/libs; java -jar java-tron.jar'
 
-
+elasticdump --input=./accounts.json --output=http://localhost:9200/accounts

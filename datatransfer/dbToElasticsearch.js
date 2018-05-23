@@ -9,6 +9,10 @@ class DBToElasticSearch {
 		this.cassandraDBUtils.getAllBlocks();
 	}
 
+	putLatestBlockDataIntoElasticSearch(latestAmount){
+		this.cassandraDBUtils.getLatestBlocks(latestAmount);
+	}
+
 	putAllWitnessDataIntoElasticSearch(){
 		let that = this;
 

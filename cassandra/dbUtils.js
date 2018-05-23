@@ -7,6 +7,9 @@ const queryGetTransactionsFromBlock 	= 		'SELECT JSON number, transactionsCount,
 // BLOCKS
 const queryGetFirstBlocksPartition 		=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block LIMIT ' + QUERY_LIMIT;
 const queryGetBlocksPartition 	 		=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
+const queryGetLatestBlock	 	 		=		'SELECT JSON MAX(number) FROM block';
+const queryGetBlockByNumber		 		=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block WHERE number = ? ALLOW FILTERING';
+const queryGetLatestNumberOfBlocks	 	=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block WHERE number > ? LIMIT ' + QUERY_LIMIT + " ALLOW FILTERING";
 const queryInsertBlock					=		'INSERT INTO block (uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 // WITNESSES
@@ -56,6 +59,50 @@ class CassandraDBUtils {
 			} else {
 				console.log("All blocks are read");
 			}
+		});
+	}
+
+	_getBlocksPartition(latestUuid){
+		let that = this;
+		let dataPromise = this.cassandraClient.execute(queryGetBlocksPartition, [latestUuid], { prepare: true });
+		dataPromise.then(async function(dataFromLocalNode){
+			if(dataFromLocalNode["rows"][QUERY_LIMIT-1]){
+				let row = JSON.parse(dataFromLocalNode["rows"][QUERY_LIMIT-1]['[json]']);
+				let latestUuid = row.uuid;
+				that.elasticSearchDBUtils.insertBlocks(dataFromLocalNode);
+				that._getBlocksPartition(latestUuid)
+			} else if(dataFromLocalNode["rows"][0]){
+				that.elasticSearchDBUtils.insertBlocks(dataFromLocalNode);
+				console.log("All blocks are read");
+			}
+		});
+	}
+
+	async getLatestBlocks(latestAmount){
+		if(latestAmount > QUERY_LIMIT){
+			console.log("Cannot get latest " + latestAmount + " blocks. The query limit is " + QUERY_LIMIT);
+		} else {
+			let that = this;
+			var dataPromise = that.getAll(queryGetLatestBlock);
+			dataPromise.then(function(dataFromLocalNode){
+				let row = JSON.parse(dataFromLocalNode["rows"][0]['[json]']);
+				let maxNumber = row["system.max(number)"];
+				let firstBlockNumber = maxNumber - latestAmount;
+				var dataPromise2 = that.cassandraClient.execute(queryGetBlockByNumber, [firstBlockNumber], { prepare: true });
+				dataPromise2.then(function(dataFromLocalNode2){
+					let row2 = JSON.parse(dataFromLocalNode2["rows"][0]['[json]']);
+					that._getLatestNumberOfBlocks(row2.number)
+				});
+			});
+		}
+	}
+
+	_getLatestNumberOfBlocks(latestNumber){
+		let that = this;
+		let dataPromise = this.cassandraClient.execute(queryGetLatestNumberOfBlocks, [latestNumber], { prepare: true });
+		dataPromise.then(async function(dataFromLocalNode){
+			that.elasticSearchDBUtils.insertBlocks(dataFromLocalNode);
+			console.log("Latest blocks are read");
 		});
 	}
 

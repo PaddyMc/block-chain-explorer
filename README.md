@@ -40,3 +40,18 @@
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' container_name_or_id
 
 
+
+
+
+install google protobuffer
+protoc --proto_path= --js_out=import_style=commonjs,binary:build/gen api/api.proto
+protoc --proto_path= --js_out=import_style=commonjs,binary:build/gen core/Tron.proto
+protoc --proto_path= --js_out=import_style=commonjs,binary:build/gen core/Contract.proto
+protoc --proto_path= --js_out=import_style=commonjs,binary:build/gen core/Discover.proto
+protoc --proto_path= --js_out=import_style=commonjs,binary:build/gen core/TronInventoryItems.proto
+protoc --proto_path= --js_out=import_style=commonjs,binary:build/gen google/api/annotations.proto
+
+GRPC pb
+npm config set unsafe-perm true
+sudo npm install protoc-gen-grpc -g
+protoc-gen-grpc --js_out=import_style=commonjs,binary:./build --grpc_out=./build --proto_path= api/api.proto

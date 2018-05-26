@@ -2,9 +2,10 @@ const cassandra = require('cassandra-driver');
 
 const QUERY_LIMIT = 5000;
 
-const queryGetTransactionsFromBlock 	= 		'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
+const queryGetTransactionsFromBlock 		= 		'SELECT JSON number, transactionsCount,transactions FROM block WHERE number = ?';
 
 // BLOCKS
+
 const queryGetFirstBlocksPartition 		=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block LIMIT ' + QUERY_LIMIT;
 const queryGetBlocksPartition 	 		=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
 const queryGetLatestBlock	 	 		=		'SELECT JSON MAX(number) FROM block';
@@ -12,27 +13,29 @@ const queryGetBlockByNumber		 		=		'SELECT JSON uuid, hash, parentHash, number, 
 const queryGetLatestNumberOfBlocks	 	=		'SELECT JSON uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal FROM block WHERE number > ? LIMIT ' + QUERY_LIMIT + " ALLOW FILTERING";
 const queryInsertBlock					=		'INSERT INTO block (uuid, hash, parentHash, number, time, contracttype, witnessAddress, transactionsCount, transactions, size, transactionsTotal) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
+
 // WITNESSES
-const queryGetAllWitnesses				=		'SELECT JSON address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness LIMIT ' + QUERY_LIMIT;
-const queryInsertWitness 				=		'INSERT INTO witness (address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
+const queryGetAllWitnesses					=		'SELECT JSON address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs FROM witness LIMIT ' + QUERY_LIMIT;
+const queryInsertWitness 					=		'INSERT INTO witness (address, votecount, pubkey, url, totalproduced, totalmissed, latestblocknum, latestslotnum, isjobs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);'
 
 // NODES
-const queryGetAllNodes 					=		'SELECT JSON host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org FROM nodes LIMIT ' + QUERY_LIMIT;
-const queryInsertNode 					=		'INSERT INTO nodes (host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
+const queryGetAllNodes 						=		'SELECT JSON host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org FROM nodes LIMIT ' + QUERY_LIMIT;
+const queryInsertNode 						=		'INSERT INTO nodes (host, port, city, region, latitude, longitude, continentcode, countryname, country, regioncode, currency, org) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);'
 
 // ASSETISSUES
-const queryGetAllAssetIssue 			=		'SELECT JSON ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url FROM assetissues LIMIT ' + QUERY_LIMIT;
-const queryInsertAssetIssue 			=		'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+const queryGetAllAssetIssue 				=		'SELECT JSON ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url FROM assetissues LIMIT ' + QUERY_LIMIT;
+const queryInsertAssetIssue 				=		'INSERT INTO assetissues (ownerAddress, name, totalsupply, trxnum, num, starttime, endtime, decayratio, votescore, description, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 // ACCOUNTS
-const queryGetFirstAccountsPartition 	=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
-const queryGetAccountsPartition 		=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
-const queryInsertAccount 				=		'INSERT INTO accounts (uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+const queryGetFirstAccountsPartition 		=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts LIMIT ' + QUERY_LIMIT;
+const queryGetAccountsPartition 			=		'SELECT JSON uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code FROM accounts WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
+const queryInsertAccount 					=		'INSERT INTO accounts (uuid, accountname, type, address, balance, voteslist, assetmap, latestoprationtime, frozenlist, bandwidth, createtime, allowance, latestwithdrawtime, code) VALUES (uuid(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
 // TRANSACTIONS
 const queryGetFirstTransactionsPartition 	=		'SELECT JSON uuid, blocknum, transactionnum, fromaddress, toaddress, amount FROM transactions LIMIT ' + QUERY_LIMIT;
 const queryGetTransactionsPartition 		=		'SELECT JSON uuid, blocknum, transactionnum, fromaddress, toaddress, amount FROM transactions WHERE token(uuid) > token(?) LIMIT ' + QUERY_LIMIT;
-const queryInsertTransaction 			=		'INSERT INTO transactions (uuid, blocknum, transactionnum, fromaddress, toaddress, amount) VALUES (uuid(), ?, ?, ?, ?, ?);';
+const queryInsertTransaction 				=		'INSERT INTO transactions (uuid, blocknum, transactionnum, fromaddress, toaddress, amount) VALUES (uuid(), ?, ?, ?, ?, ?);';
+
 
 class CassandraDBUtils {
 	constructor(cassandraSetup, elasticSearchDBUtils) {

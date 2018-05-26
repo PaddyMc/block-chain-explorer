@@ -7,6 +7,10 @@ class TronExTimer {
 
 	start(){
 		setInterval(function(){
+			this.putLatestBlocksInDB();
+		}, 60000);
+
+		setInterval(function(){
 			this.putAllDataIntoDB();
 		}, 600000);
 
@@ -22,6 +26,10 @@ class TronExTimer {
 			this.dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 		}, 1200000);
 
+	}
+
+	putLatestBlocksInDB(){
+		//this.blockt
 	}
 
 	putAllBlockDataIntoDB(){

@@ -29,14 +29,23 @@ const blockToElastic = new BlockToElastic(blockChainData, elasticSearchDBUtils);
 //Timer
 const tronExTimer = new TronExTimer(blocktoDB, dbToElasticSearch, blockToElastic);
 
-tronExTimer.start();
+// tronExTimer.putAllBlockDataIntoDB();
+// tronExTimer.putAllBlockDataIntoElasticSearch();
+
+// tronExTimer.putAllDataIntoDB();
+// tronExTimer.putAllDataIntoElastic();
+
+// tronExTimer.start();
 
 //  ToDo
-//	Get last 100 Blocks // 30 seconds
 //	Fix accounts
 
-// let dataPromise = blockChainData.listAccounts();
-// dataPromise.then(function(dataFromLocalNode){
-//     console.log(dataFromLocalNode.toObject());
-// });
+for(let i =0; i<10;i++){
+	let dataPromise = blockChainData.getAccount(1);
+	dataPromise.then(function(dataFromLocalNode){
+    	console.log(dataFromLocalNode.toObject());
+	});
+}
+	
+
 

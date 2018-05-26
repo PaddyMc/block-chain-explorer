@@ -1,10 +1,10 @@
 const {base64DecodeFromString, byteArray2hexStr, bytesToString} = require("@tronprotocol/wallet-api/src/utils/bytes");
 const deserializeTransaction = require("@tronprotocol/wallet-api/src/protocol/serializer").deserializeTransaction;
-const {Block, Transaction, Account} = require("@tronprotocol/wallet-api/src/protocol/core/Tron_pb");
+const {Block, Transaction, Account} = require("../protos/core/Tron_pb");
 const {getBase58CheckAddress, signTransaction, passwordToAddress} = require("@tronprotocol/wallet-api/src/utils/crypto");
-const {Address ,EmptyMessage, NumberMessage} = require("@tronprotocol/wallet-api/src/protocol/api/api_pb");
+const {Address ,EmptyMessage, NumberMessage} = require("../protos/api/api_pb");
 
-const {WalletClient, DatabaseClient} = require("@tronprotocol/wallet-api/src/protocol/api/api_grpc_pb");
+const {WalletClient, DatabaseClient} = require("../protos/api/api_grpc_pb");
 const caller = require('grpc-caller');
 
 
@@ -36,12 +36,31 @@ class BlockChainData {
 		return await this.GRPCClient.getNowBlock(new EmptyMessage());
 	}
 
-	async getAccount() {
+	async getAccount(number) {
 		let newAccount = new Account();
-    	newAccount.setAccountName("");
+    	//newAccount.setName("Devaccount");
+    	//newAccount.setAddress("27VfsTtB9L36veRxqf8ipNZ2q9uBtw6XrNh");
+    	//newAccount.setType(0);
+    	// newAccount.setName("Devaccount");
+    	// newAccount.setName("Devaccount");
+    	// newAccount.setName("Devaccount");
+    	// newAccount.setName("Devaccount");
 		let account = await this.GRPCClient.getAccount(newAccount);
-		return account.toObject();
+		return account;
 	}
+
+	// async getAccountNet(top,skip) {
+	// 	let accountNetMessage = new AccountNet();
+ //    	//accountNetMessage.setFreeNetUsed("Devaccount");
+ //    	//accountNetMessage.setFreeNetLimit("27VfsTtB9L36veRxqf8ipNZ2q9uBtw6XrNh");
+ //    	//accountNetMessage.setNetUsed(0);
+ //    	//accountNetMessage.setNetLimit(0);
+ //    	// assetNetUsed
+ //    	// assetNetLimit
+
+	// 	let account = await this.GRPCClient.getAccountNet(newAccount);
+	// 	return account;
+	// }
 
 	async listAccounts() {
 		let accounts = await this.GRPCClient.listAccounts(new EmptyMessage())

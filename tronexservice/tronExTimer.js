@@ -6,31 +6,33 @@ class TronExTimer {
 	}
 
 	start(){
-		// setInterval(function(){
-		// 	this.putLatestBlocksInDB();
-		// }, 60000);
+		var that = this;
 
 		setInterval(function(){
-			this.putAllDataIntoDB();
+			that.putLatestBlocksInDB();
+		}, 60000);
+
+		setInterval(function(){
+			that.putAllDataIntoDB();
 		}, 600000);
 
 		setInterval(function(){
-			this.blocktoDB.putAllBlockDataIntoDB();
+			that.blocktoDB.putAllBlockDataIntoDB();
 		}, 800000);
 
 		setInterval(function(){
-			this.putAllDataIntoElastic();
+			that.putAllDataIntoElastic();
 		}, 1000000);
 
 		setInterval(function(){
-			this.dbToElasticSearch.putAllBlockDataIntoElasticSearch();
+			that.dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 		}, 1200000);
 
 	}
 
-	// putLatestBlocksInDB(){
-	// 	//this.blockt
-	// }
+	putLatestBlocksInDB(){
+		this.blocktoDB.putLatestBlockDataIntoDB(100);
+	}
 
 	putAllBlockDataIntoDB(){
 		this.blocktoDB.putAllBlockDataIntoDB();

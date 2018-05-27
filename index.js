@@ -18,7 +18,7 @@ const cassandraSetup = { contactPoints: ['172.18.0.3'], keyspace: 'blockchainexp
 const cassandraDBUtils = new CassandraDBUtils(cassandraSetup, elasticSearchDBUtils);
 
 //BlockChainData
-const GRPC_HOSTNAME_PORT = { hostname:"172.18.02", port:"50051" };
+const GRPC_HOSTNAME_PORT = { hostname:"172.18.0.2", port:"50051" };
 const blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
 
 //DTO's
@@ -35,10 +35,10 @@ const tronExTimer = new TronExTimer(blocktoDB, dbToElasticSearch, blockToElastic
 // tronExTimer.putAllDataIntoDB();
 // tronExTimer.putAllDataIntoElastic();
 
-let dataPromise = blockChainData.getAccount(1);
-dataPromise.then(function(dataFromLocalNode){
-	console.log(dataFromLocalNode.toObject());
-});
+// let dataPromise = blockChainData.getAccount(1);
+// dataPromise.then(function(dataFromLocalNode){
+// 	console.log(dataFromLocalNode.toObject());
+// });
 
 tronExTimer.start();
 

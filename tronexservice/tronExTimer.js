@@ -45,7 +45,7 @@ class TronExTimer {
 	putAllDataIntoDB(){
 		this.blocktoDB.putAllWitnessesIntoDB();
 		this.blocktoDB.putAllNodesIntoDB();
-		this.blocktoDB.putAllAccountsIntoDB();
+		//this.blocktoDB.putAllAccountsIntoDB();
 		this.blocktoDB.putAllIssuedAssetsIntoDB();
 	}
 

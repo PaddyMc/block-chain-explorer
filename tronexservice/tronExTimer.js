@@ -6,9 +6,9 @@ class TronExTimer {
 	}
 
 	start(){
-		setInterval(function(){
-			this.putLatestBlocksInDB();
-		}, 60000);
+		// setInterval(function(){
+		// 	this.putLatestBlocksInDB();
+		// }, 60000);
 
 		setInterval(function(){
 			this.putAllDataIntoDB();
@@ -28,9 +28,9 @@ class TronExTimer {
 
 	}
 
-	putLatestBlocksInDB(){
-		//this.blockt
-	}
+	// putLatestBlocksInDB(){
+	// 	//this.blockt
+	// }
 
 	putAllBlockDataIntoDB(){
 		this.blocktoDB.putAllBlockDataIntoDB();
@@ -49,7 +49,7 @@ class TronExTimer {
 
 	putAllDataIntoElastic(){
 		this.dbToElasticSearch.putAllWitnessDataIntoElasticSearch();
-		this.dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
+		//this.dbToElasticSearch.putAllAccountsDataIntoElasticSearch();
 		this.dbToElasticSearch.putAllNodeDataIntoElasticSearch();
 		this.dbToElasticSearch.putAllIssuedAssetsIntoElasticSearch();
 

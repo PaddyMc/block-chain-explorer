@@ -35,17 +35,17 @@ const tronExTimer = new TronExTimer(blocktoDB, dbToElasticSearch, blockToElastic
 // tronExTimer.putAllDataIntoDB();
 // tronExTimer.putAllDataIntoElastic();
 
-// tronExTimer.start();
+tronExTimer.start();
 
 //  ToDo
 //	Fix accounts
 
-for(let i =0; i<10;i++){
-	let dataPromise = blockChainData.getAccount(1);
-	dataPromise.then(function(dataFromLocalNode){
-    	console.log(dataFromLocalNode.toObject());
-	});
-}
+// for(let i =0; i<10;i++){
+// 	let dataPromise = blockChainData.getAccount(1);
+// 	dataPromise.then(function(dataFromLocalNode){
+//     	console.log(dataFromLocalNode.toObject());
+// 	});
+// }
 	
 
 

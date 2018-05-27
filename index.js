@@ -35,6 +35,11 @@ const tronExTimer = new TronExTimer(blocktoDB, dbToElasticSearch, blockToElastic
 // tronExTimer.putAllDataIntoDB();
 // tronExTimer.putAllDataIntoElastic();
 
+let dataPromise = blockChainData.getAccount(1);
+dataPromise.then(function(dataFromLocalNode){
+	console.log(dataFromLocalNode.toObject());
+});
+
 tronExTimer.start();
 
 //  ToDo

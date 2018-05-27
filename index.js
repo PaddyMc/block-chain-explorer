@@ -11,14 +11,14 @@ const TronExTimer = require("./tronexservice/tronExTimer.js");
 const geoLocationUrl = "https://ipapi.co/";
 
 //DBUtils
-const elasticSearchSetup = { host: 'localhost:9200' };
+const elasticSearchSetup = { host: '172.20.0.3:9200' };
 const elasticSearchDBUtils = new ElasticSearchDBUtils(elasticSearchSetup);
 
-const cassandraSetup = { contactPoints: ['127.0.0.1'], keyspace: 'blockchainexplorer' };
+const cassandraSetup = { contactPoints: ['172.18.0.3'], keyspace: 'blockchainexplorer' };
 const cassandraDBUtils = new CassandraDBUtils(cassandraSetup, elasticSearchDBUtils);
 
 //BlockChainData
-const GRPC_HOSTNAME_PORT = { hostname:"127.0.0.1", port:"50051" };
+const GRPC_HOSTNAME_PORT = { hostname:"172.18.02", port:"50051" };
 const blockChainData = new BlockChainData(GRPC_HOSTNAME_PORT);
 
 //DTO's

@@ -57,7 +57,7 @@ class ElasticSearchDBUtils {
 		for(var i in jsonData["rows"]) {
 			var row = JSON.parse(jsonData["rows"][i]['[json]']);
 		    bulkData = {
-		    	num: index,
+		    	num: i,
 				host: row.host,
 				port: row.port,
 				city: row.city,

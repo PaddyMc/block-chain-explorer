@@ -8,7 +8,7 @@ const DBToElasticSearch = require("./datatransfer/dbToElasticsearch.js");
 const BlockToElastic = require("./datatransfer/blockToElastic.js");
 const TronExTimer = require("./tronexservice/tronExTimer.js");
 
-const geoLocationUrl = "https://ipapi.co/";
+const geoLocationUrl = "http://api.ipstack.com/";
 
 //DBUtils
 const elasticSearchSetup = { host: 'localhost:9200' };
@@ -39,13 +39,4 @@ tronExTimer.start();
 
 //  ToDo
 //	Fix accounts
-
-// for(let i =0; i<10;i++){
-// 	let dataPromise = blockChainData.getAccount(1);
-// 	dataPromise.then(function(dataFromLocalNode){
-//     	console.log(dataFromLocalNode.toObject());
-// 	});
-// }
-	
-
 

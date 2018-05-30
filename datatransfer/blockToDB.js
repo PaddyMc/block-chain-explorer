@@ -1,4 +1,4 @@
-const https = require('https')
+const http = require('http')
 const {base64DecodeFromString, byteArray2hexStr, bytesToString} = require("@tronprotocol/wallet-api/src/utils/bytes");
 const {getBase58CheckAddress, signTransaction, passwordToAddress} = require("@tronprotocol/wallet-api/src/utils/crypto");
 
@@ -9,7 +9,7 @@ class BlockToDB {
 		this.blockChainData = BlockChainData;
 		this.cassandraDBUtils = CassandraDBUtils;
 		this.geoLocationUrl = GeoLocationUrl;
-		this.geoLocationDataType = "/json";
+		this.geoLocationDataType = "?access_key=81e80d40e299e6d0e0be641b8fbaf086&format=1";
 	}
 
 	// WITNESSES
@@ -190,7 +190,7 @@ class BlockToDB {
 
 					paramBatch.push(params);
 
-					if(i%5 == 0 || i == number) {
+					if(i%3 == 0 || i == number) {
 						batchIntervalCount++;
 						that.cassandraDBUtils.batchInsertTransactions(transactionBatch);
 						that.cassandraDBUtils.batchInsertBlock(paramBatch);
@@ -248,7 +248,7 @@ class BlockToDB {
 	_buildParamsForNodeInsertStatment(decodedHost, dataFromNode, geoLocationInfo){
 		let params = [];
 		if(Object.keys(geoLocationInfo).length > 3){
-			params = [decodedHost, dataFromNode.port.toString(), geoLocationInfo.city, geoLocationInfo.region, geoLocationInfo.latitude, geoLocationInfo.longitude, geoLocationInfo.continent_code, geoLocationInfo.country_name, geoLocationInfo.country, geoLocationInfo.region_code, geoLocationInfo.currency, geoLocationInfo.org];
+			params = [decodedHost, dataFromNode.port.toString(), geoLocationInfo.city, geoLocationInfo.region, geoLocationInfo.latitude, geoLocationInfo.longitude, geoLocationInfo.continent_code, geoLocationInfo.country_name, geoLocationInfo.country_name, geoLocationInfo.region_code, "geoLocationInfo.currency", "geoLocationInfo.org"];
 		} else {
 			params = [decodedHost, dataFromNode.port.toString(), "", "", 0, 0, "", "", "", "", "", ""];
 		}
@@ -292,7 +292,7 @@ class BlockToDB {
 
 	async _getLocationFromIp(urlForIpConversion){
 		return new Promise((resolve, reject) => {
-			let request = https.get(urlForIpConversion, (response) => {
+			let request = http.get(urlForIpConversion, (response) => {
 				response.setEncoding('utf8');
 				response.on('data', (body) => {
 					if(body.includes("Request throttled")){

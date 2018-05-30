@@ -7,31 +7,42 @@ class TronExTimer {
 
 	start(){
 		var that = this;
+		that.putAllNodesIntoDB();
 
+		// 5 mins
 		setInterval(function(){
 			that.putLatestBlocksInDB();
-		}, 60000);
+		}, 300000);
 
+		// 10 mins
 		setInterval(function(){
 			that.putAllDataIntoDB();
 		}, 600000);
 
-		setInterval(function(){
-			that.blocktoDB.putAllBlockDataIntoDB();
-		}, 800000);
-
+		// 15 mins
 		setInterval(function(){
 			that.putAllDataIntoElastic();
-		}, 1000000);
+		}, 900000);
 
+		// 20 mins
 		setInterval(function(){
 			that.dbToElasticSearch.putAllBlockDataIntoElasticSearch();
 		}, 1200000);
 
+		// 1 hr
+		setInterval(function(){
+			that.blocktoDB.putAllBlockDataIntoDB();
+		}, 3600000);
+
+		// 2 hr
+		setInterval(function(){
+			that.putAllNodesIntoDB();
+		}, 7200000);
+
 	}
 
 	putLatestBlocksInDB(){
-		this.blocktoDB.putLatestBlockDataIntoDB(100);
+		this.blocktoDB.putLatestBlockDataIntoDB(300);
 	}
 
 	putAllBlockDataIntoDB(){
@@ -44,7 +55,6 @@ class TronExTimer {
 
 	putAllDataIntoDB(){
 		this.blocktoDB.putAllWitnessesIntoDB();
-		this.blocktoDB.putAllNodesIntoDB();
 		//this.blocktoDB.putAllAccountsIntoDB();
 		this.blocktoDB.putAllIssuedAssetsIntoDB();
 	}
@@ -59,6 +69,10 @@ class TronExTimer {
 
 		this.blockToElastic.putDynamicPropertiesIntoElastic();
 		this.blockToElastic.putTotalTransactionIntoElastic();
+	}
+
+	putAllNodesIntoDB(){
+		this.blocktoDB.putAllNodesIntoDB();
 	}
 
 }

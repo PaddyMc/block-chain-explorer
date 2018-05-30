@@ -1,4 +1,4 @@
-const https = require('https')
+const http = require('http')
 const {base64DecodeFromString, byteArray2hexStr, bytesToString} = require("@tronprotocol/wallet-api/src/utils/bytes");
 const {getBase58CheckAddress, signTransaction, passwordToAddress} = require("@tronprotocol/wallet-api/src/utils/crypto");
 
@@ -41,11 +41,8 @@ class BlockToDB {
 				let decodedHost = new Buffer(tempDataFromNode.nodesList[i].address.host, 'base64').toString();
 			    let fullUrl = that.geoLocationUrl+decodedHost+that.geoLocationDataType;
 
-			    console.log(fullUrl);
-
 		    	let nodeInfo = that._getLocationFromIp(fullUrl);
 				nodeInfo.then(function(geoLocationInfo){
-					console.log(geoLocationInfo);
 					if(i === tempDataFromNode.nodesList.length - 1){
 		        		console.log("Last Node Added To Cluster: "+tempDataFromNode.nodesList.length);
 		        	}
@@ -295,7 +292,7 @@ class BlockToDB {
 
 	async _getLocationFromIp(urlForIpConversion){
 		return new Promise((resolve, reject) => {
-			let request = https.get(urlForIpConversion, (response) => {
+			let request = http.get(urlForIpConversion, (response) => {
 				response.setEncoding('utf8');
 				response.on('data', (body) => {
 					if(body.includes("Request throttled")){

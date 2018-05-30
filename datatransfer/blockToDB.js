@@ -43,6 +43,7 @@ class BlockToDB {
 
 		    	let nodeInfo = that._getLocationFromIp(fullUrl);
 				nodeInfo.then(function(geoLocationInfo){
+					console.log(geoLocationInfo);
 					if(i === tempDataFromNode.nodesList.length - 1){
 		        		console.log("Last Node Added To Cluster: "+tempDataFromNode.nodesList.length);
 		        	}

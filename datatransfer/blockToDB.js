@@ -41,6 +41,8 @@ class BlockToDB {
 				let decodedHost = new Buffer(tempDataFromNode.nodesList[i].address.host, 'base64').toString();
 			    let fullUrl = that.geoLocationUrl+decodedHost+that.geoLocationDataType;
 
+			    console.log(fullUrl);
+
 		    	let nodeInfo = that._getLocationFromIp(fullUrl);
 				nodeInfo.then(function(geoLocationInfo){
 					console.log(geoLocationInfo);
